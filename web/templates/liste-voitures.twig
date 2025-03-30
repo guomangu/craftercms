@@ -1,0 +1,104 @@
+{# templates/liste-voitures.twig #}
+{% extends "_layout.twig" %} {# Adaptez si votre layout principal a un autre nom #}
+
+{% block content %}
+    <h1>Nos dernières voitures</h1>
+
+    {# --- Section Liste des Voitures --- #}
+    <h2>Derniers ajouts</h2>
+    {% set latestVoitures = craft.entries()
+        .section('voitures')      {# Récupère les entrées de la section 'voitures' #}
+        .orderBy('dateCreated desc') {# Trie par date de création, la plus récente en premier #}
+        .limit(10)                 {# Limite aux 10 dernières (ajustez si besoin) #}
+        .all() %}
+
+    {% if latestVoitures|length %}
+        <ul>
+            {% for voiture in latestVoitures %}
+                <li>
+                    {# Lien vers la voiture individuelle si vous avez configuré l'URI #}
+                    <a href="{{ voiture.url }}">
+                        {{ voiture.title }} {# Affiche le titre (ou combinez marque/modèle) #}
+                        {# Exemple: {{ voiture.marque }} {{ voiture.modele }} ({{ voiture.annee }}) #}
+                    </a>
+                    {# Afficher une image si elle existe #}
+                    {% set image = voiture.photoVoiture.one() %}
+                    {% if image %}
+                         <img src="{{ image.getUrl({width: 100, height: 100, mode: 'crop'}) }}" alt="{{ image.title ?? voiture.title }}">
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucune voiture n'a été ajoutée pour le moment.</p>
+    {% endif %}
+
+    <hr> {# Séparateur visuel #}
+
+    {# --- Section Formulaire d'Ajout --- #}
+    <h2>Ajouter une nouvelle voiture</h2>
+
+    {# Afficher les messages de succès ou d'erreur après soumission #}
+    {% if craft.app.session.hasFlash('notice') %}
+        <div class="message notice">{{ craft.app.session.getFlash('notice') }}</div>
+    {% endif %}
+    {% if craft.app.session.hasFlash('error') %}
+        <div class="message error">{{ craft.app.session.getFlash('error') }}</div>
+    {% endif %}
+    {# Affiche les erreurs spécifiques aux champs si l'objet 'entry' existe (après une soumission échouée) #}
+    {% if entry is defined %}
+        {# {{ errorList(entry.getErrors()) }} #} {# Décommentez si vous avez un macro `errorList` #}
+        {# Ou affichez les erreurs manuellement #}
+        {% for attribute, errors in entry.getErrors() %}
+            {% for error in errors %}
+                <p class="error">{{ attribute }}: {{ error }}</p>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+
+
+    {# Le formulaire pointe vers l'action intégrée de Craft pour sauvegarder les entrées #}
+    <form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
+        {{ csrfInput() }} {# Important pour la sécurité CSRF #}
+        {{ actionInput('entries/save-entry') }} {# Action Craft pour sauvegarder #}
+        {{ redirectInput('liste-voitures?success=1') }} {# Redirige vers cette même page après succès (optionnel) #}
+        {{ hiddenInput('sectionId', craft.sections.getSectionByHandle('voitures').id) }} {# ID de la section où sauvegarder #}
+        {{ hiddenInput('enabled', '1') }} {# Pour publier l'entrée directement (sinon, elle est sauvegardée comme brouillon) #}
+        {# Si vous n'avez qu'un seul type d'entrée, ce n'est pas strictement nécessaire, mais c'est plus sûr : #}
+        {# {{ hiddenInput('entryTypeId', craft.sections.getSectionByHandle('voitures').getEntryTypes()[0].id) }} #}
+
+        {# Champ Titre (si vous ne le générez pas automatiquement) #}
+        {# <label for="title">Titre:</label>
+           <input id="title" type="text" name="title" value="{{ entry.title ?? '' }}"><br> #}
+
+        {# Champs personnalisés - IMPORTANT: utilisez fields[handleDuChamp] #}
+        <label for="marque">Marque:</label>
+        <input id="marque" type="text" name="fields[marque]" value="{{ entry.marque ?? '' }}">
+        {# Affiche l'erreur spécifique pour ce champ s'il y en a une #}
+        {% if entry is defined and entry.hasErrors('marque') %}<span class="error">{{ entry.getFirstError('marque') }}</span>{% endif %}
+        <br>
+
+        <label for="modele">Modèle:</label>
+        <input id="modele" type="text" name="fields[modele]" value="{{ entry.modele ?? '' }}">
+        {% if entry is defined and entry.hasErrors('modele') %}<span class="error">{{ entry.getFirstError('modele') }}</span>{% endif %}
+        <br>
+
+        <label for="annee">Année:</label>
+        <input id="annee" type="number" name="fields[annee]" value="{{ entry.annee ?? '' }}">
+        {% if entry is defined and entry.hasErrors('annee') %}<span class="error">{{ entry.getFirstError('annee') }}</span>{% endif %}
+        <br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="fields[description]">{{ entry.description ?? '' }}</textarea>
+        {% if entry is defined and entry.hasErrors('description') %}<span class="error">{{ entry.getFirstError('description') }}</span>{% endif %}
+        <br>
+
+        <label for="photoVoiture">Photo:</label>
+        <input id="photoVoiture" type="file" name="fields[photoVoiture]">
+        {# La gestion des erreurs pour les fichiers est un peu plus complexe #}
+        <br>
+
+        <button type="submit">Ajouter la voiture</button>
+    </form>
+
+{% endblock %}

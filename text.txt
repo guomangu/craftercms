@@ -1,0 +1,10 @@
+
+docker run web-1 composer create-project craftcms/craft /app --ignore-platform-reqs  
+
+
+
+docker exec 4ead5c648e08e0347646b487d55192d84574019d53b8177d73878282154043ff php /app/craft setup
+
+docker exec 4ead5c648e08e0347646b487d55192d84574019d53b8177d73878282154043ff composer install
+
+
