@@ -1,4 +1,4 @@
-dateModified: 1743303319
+dateModified: 1743361687
 email:
   fromEmail: aluligu@gmail.com
   fromName: a
@@ -15,6 +15,7 @@ meta:
   __names__:
     0d874f90-596b-4955-b5f0-c6c493421528: imgsvol # imgsvol
     1dbdb624-0e6e-4f1a-b048-5aed379070c7: nom # nom
+    3adee4e4-e6a6-4f1d-85ce-21d122603d38: mail # mail
     03e942c5-fa2f-4d2a-b7e5-52766f07b3b2: a # a
     5c005119-58f0-4eee-ad8c-32984a2686c3: pilotes # pilotes
     8a6cd0b3-d0ff-4c2b-9142-ff50b5cf8a16: a # a
@@ -22,8 +23,11 @@ meta:
     59aacfcf-933c-4521-a3c9-e25dff69e354: Annee # Annee
     412d2b65-92f7-40dc-8dbf-e495840944c4: 'Voitures standard' # Voitures standard
     879ed238-6c41-49ca-bb35-e156a0f6b56a: Voitures # Voitures
+    9434ca7d-d978-4b3e-b98c-e00e8c4aedaf: gens # gens
+    7399850e-5b21-4b14-8694-29f4ac63d0fc: pass # pass
     ba425b92-d80c-4d12-874e-0b64d61cd292: pilotes # pilotes
     bd1d9f29-cc92-44e1-9fc4-44eb474992cf: imgpilote # imgpilote
+    c3f3fb56-9fb3-4129-838b-1a5e7f05bc32: gens # gens
     e5131bdd-7b21-4287-992b-d2504987a1a6: Marque # Marque
     f292de92-c1b2-45c5-8734-0371f823f9cb: voitures # voitures
     ff892292-fe95-4c7a-aa41-5c4ae2dc96fd: pilotes # pilotes
@@ -56,16 +60,47 @@ plugins:
                 -
                   - authorUid
                   - f2ddd9c2-0d1b-4341-9c50-69fa57b2a633
+          -
+            - 9434ca7d-d978-4b3e-b98c-e00e8c4aedaf # gens
+            -
+              __assoc__:
+                -
+                  - sectionUid
+                  - 9434ca7d-d978-4b3e-b98c-e00e8c4aedaf # gens
+                -
+                  - allowGuestSubmissions
+                  - '1'
+                -
+                  - enabledByDefault
+                  - '1'
+                -
+                  - runValidation
+                  - '1'
+                -
+                  - authorUid
+                  - f2ddd9c2-0d1b-4341-9c50-69fa57b2a633
+          -
+            - ff892292-fe95-4c7a-aa41-5c4ae2dc96fd # pilotes
+            -
+              __assoc__:
+                -
+                  - sectionUid
+                  - ff892292-fe95-4c7a-aa41-5c4ae2dc96fd # pilotes
+                -
+                  - allowGuestSubmissions
+                  - '1'
+                -
+                  - enabledByDefault
+                  - '1'
+                -
+                  - runValidation
+                  - '1'
+                -
+                  - authorUid
+                  - f2ddd9c2-0d1b-4341-9c50-69fa57b2a633
 system:
   edition: solo
   live: true
   name: a
   schemaVersion: 5.6.0.2
   timeZone: America/Los_Angeles
-users:
-  allowPublicRegistration: false
-  defaultGroup: null
-  photoSubpath: null
-  photoVolumeUid: null
-  require2fa: false
-  requireEmailVerification: true

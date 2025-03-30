@@ -1,0 +1,29 @@
+{% set emailDepuisCookie = craft.app.request.cookies.get('eemailUtilisateur') %}
+
+
+
+{% if emailDepuisCookie %}
+    <p><strong>Connecté en tant que : {{ emailDepuisCookie }}</strong></p>
+    {# Formulaire de déconnexion #}
+    <form method="post" action="">
+        {{ csrfInput() }}
+        <button name="deconnection" type="submit">Déconnexion</button>
+    </form>
+{% else %}
+    <p><strong>Veuillez vous connecter.</strong></p>
+    {# Formulaire de connexion #}
+    <form id="connect" method="post" action="persophp/u.php">
+        {{ csrfInput() }}
+        <div>
+            <label for="email">Email :</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div>
+            {# Changer le type en password pour masquer la saisie #}
+            <label for="nom">Mot de passe :</label>
+            <input type="password" id="nom" name="nom" required>
+        </div>
+        <button type="submit">Envoyer</button>
+    </form>
+    {# {% include "users.twig" %} #} {# Si le formulaire est dans un autre fichier #}
+{% endif %}

@@ -5102,6 +5102,8 @@ return array(
     'enshrined\\svgSanitize\\data\\TagInterface' => $vendorDir . '/enshrined/svg-sanitize/src/data/TagInterface.php',
     'enshrined\\svgSanitize\\data\\XPath' => $vendorDir . '/enshrined/svg-sanitize/src/data/XPath.php',
     'mikehaertl\\shellcommand\\Command' => $vendorDir . '/mikehaertl/php-shellcommand/src/Command.php',
+    'modules\\monplugingens\\Module' => $baseDir . '/modules/monplugingens/Module.php',
+    'modules\\monplugingens\\controllers\\AuthController' => $baseDir . '/modules/monplugingens/controllers/AuthController.php',
     'phpDocumentor\\Reflection\\DocBlock' => $vendorDir . '/phpdocumentor/reflection-docblock/src/DocBlock.php',
     'phpDocumentor\\Reflection\\DocBlockFactory' => $vendorDir . '/phpdocumentor/reflection-docblock/src/DocBlockFactory.php',
     'phpDocumentor\\Reflection\\DocBlockFactoryInterface' => $vendorDir . '/phpdocumentor/reflection-docblock/src/DocBlockFactoryInterface.php',

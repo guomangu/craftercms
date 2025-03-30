@@ -24,4 +24,14 @@ use craft\helpers\App;
 
 return [
     'id' => App::env('CRAFT_APP_ID') ?: 'CraftCMS',
+
+    'modules' => [
+        // Utiliser un handle en minuscule est conventionnel
+        'monplugingens' => \modules\monplugingens\Module::class,
+    ],
+
+    'bootstrap' => [
+        // Utiliser le même handle que celui défini dans 'modules'
+        'monplugingens',
+    ],
 ];

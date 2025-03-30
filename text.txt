@@ -8,7 +8,8 @@ docker exec 4ead5c648e08e0347646b487d55192d84574019d53b8177d73878282154043ff php
 docker exec 4ead5c648e08e0347646b487d55192d84574019d53b8177d73878282154043ff composer install
 
 
+
 ls -l 
 whoami
-docker exec -u 1000 4ead5c648e08e0347646b487d55192d84574019d53b8177d73878282154043ff composer install
-docker exec -u root <container_id> chmod -R 777 /app/storage
+docker exec -u 1000 3ff43409024f028eaabdb11b669d11e5fb715b747de86fac83ad40cec9663a13 composer install
+docker exec -u root 3ff43409024f028eaabdb11b669d11e5fb715b747de86fac83ad40cec9663a13 chmod -R 777 /app/storage

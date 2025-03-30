@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   web:
     image: gggu/gucraft:1 # Vous pouvez choisir une autre version de PHP si nécessaire (ex: 8.2-dev)
