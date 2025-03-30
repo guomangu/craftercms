@@ -1,0 +1,40 @@
+{% set spinner = spinner ?? false -%}
+{% set busyMessage = busyMessage ?? false %}
+{% set failureMessage = failureMessage ?? false %}
+{% set retryMessage = retryMessage ?? false %}
+{% set successMessage = successMessage ?? false %}
+{% set enableLiveRegion = busyMessage or failureMessage or retryMessage or successMessage %}
+{% set label = label ?? null %}
+{% set labelHtml = labelHtml ?? null %}
+{% set attributes = {
+    type: type ?? 'button',
+    id: id ?? false,
+    class: (class ?? [])|explodeClass|merge([
+        'btn',
+        not (label or labelHtml) ? 'btn-empty' : null,
+    ]|filter),
+    data: {
+        'busy-message': busyMessage,
+        'failure-message': failureMessage,
+        'retry-message': retryMessage,
+        'success-message': successMessage,
+    }|merge(attributes.data ?? {}),
+}|merge(attributes ?? {}) -%}
+
+{% apply spaceless %}
+    {% if spinner and enableLiveRegion %}
+        <div role="status" class="visually-hidden"></div>
+    {% endif %}
+    {% tag 'button' with attributes %}
+        {{ (label or labelHtml) ? tag('div', {
+            class: ['label', 'inline-flex'],
+            text: label ?? null,
+            html: labelHtml ?? null
+        }) }}
+        {% if spinner %}
+            <div class="spinner spinner-absolute">
+                <span class="visually-hidden">{{ 'Loading'|t('app') }}</span>
+            </div>
+        {% endif %}
+    {% endtag %}
+{% endapply -%}
