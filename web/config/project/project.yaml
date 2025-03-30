@@ -1,4 +1,4 @@
-dateModified: 1743300027
+dateModified: 1743303319
 email:
   fromEmail: aluligu@gmail.com
   fromName: a
@@ -14,13 +14,19 @@ fs:
 meta:
   __names__:
     0d874f90-596b-4955-b5f0-c6c493421528: imgsvol # imgsvol
+    1dbdb624-0e6e-4f1a-b048-5aed379070c7: nom # nom
     03e942c5-fa2f-4d2a-b7e5-52766f07b3b2: a # a
+    5c005119-58f0-4eee-ad8c-32984a2686c3: pilotes # pilotes
     8a6cd0b3-d0ff-4c2b-9142-ff50b5cf8a16: a # a
     9b987a32-67f0-4c54-920b-73bf016c0372: photoVoiture # photoVoiture
     59aacfcf-933c-4521-a3c9-e25dff69e354: Annee # Annee
     412d2b65-92f7-40dc-8dbf-e495840944c4: 'Voitures standard' # Voitures standard
     879ed238-6c41-49ca-bb35-e156a0f6b56a: Voitures # Voitures
+    ba425b92-d80c-4d12-874e-0b64d61cd292: pilotes # pilotes
+    bd1d9f29-cc92-44e1-9fc4-44eb474992cf: imgpilote # imgpilote
     e5131bdd-7b21-4287-992b-d2504987a1a6: Marque # Marque
+    f292de92-c1b2-45c5-8734-0371f823f9cb: voitures # voitures
+    ff892292-fe95-4c7a-aa41-5c4ae2dc96fd: pilotes # pilotes
 plugins:
   guest-entries:
     edition: standard

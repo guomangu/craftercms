@@ -1,6 +1,6 @@
 color: null
 fieldLayouts:
-  59b46c65-458f-4181-9604-a6c485effc45:
+  2e9c0df6-ff74-4183-b11d-8fd23ce50217:
     tabs:
       -
         elementCondition: null
@@ -10,7 +10,7 @@ fieldLayouts:
             autocomplete: false
             autocorrect: true
             class: null
-            dateAdded: '2025-03-29T23:39:51+00:00'
+            dateAdded: '2025-03-30T02:49:29+00:00'
             disabled: false
             elementCondition: null
             id: null
@@ -31,14 +31,14 @@ fieldLayouts:
             tip: null
             title: null
             type: craft\fieldlayoutelements\entries\EntryTitleField
-            uid: bac368dc-6431-473d-9492-187ab07117ed
+            uid: 8cda4a06-83b0-4020-92a7-49339436db37
             userCondition: null
             warning: null
             width: 100
           -
-            dateAdded: '2025-03-29T23:44:40+00:00'
+            dateAdded: '2025-03-30T02:52:06+00:00'
             elementCondition: null
-            fieldUid: e5131bdd-7b21-4287-992b-d2504987a1a6 # Marque
+            fieldUid: bd1d9f29-cc92-44e1-9fc4-44eb474992cf # imgpilote
             handle: null
             includeInCards: false
             instructions: null
@@ -47,14 +47,14 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 55f817e2-6b12-469a-b4b2-95177f278b7a
+            uid: 2c5286a1-53c9-4798-a29a-9d1fb3333af0
             userCondition: null
             warning: null
             width: 100
           -
-            dateAdded: '2025-03-29T23:44:40+00:00'
+            dateAdded: '2025-03-30T02:52:06+00:00'
             elementCondition: null
-            fieldUid: 9b987a32-67f0-4c54-920b-73bf016c0372 # photoVoiture
+            fieldUid: 1dbdb624-0e6e-4f1a-b048-5aed379070c7 # nom
             handle: null
             includeInCards: false
             instructions: null
@@ -63,14 +63,14 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: f73554dc-9a68-49a7-a335-f2003a203137
+            uid: a1652278-2b93-43d9-8242-27f194148cc3
             userCondition: null
             warning: null
             width: 100
           -
-            dateAdded: '2025-03-29T23:44:40+00:00'
+            dateAdded: '2025-03-30T02:53:57+00:00'
             elementCondition: null
-            fieldUid: 59aacfcf-933c-4521-a3c9-e25dff69e354 # Annee
+            fieldUid: f292de92-c1b2-45c5-8734-0371f823f9cb # voitures
             handle: null
             includeInCards: false
             instructions: null
@@ -79,33 +79,17 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 880dc1d2-dfb1-4953-b04a-0ee3180f192b
-            userCondition: null
-            warning: null
-            width: 100
-          -
-            dateAdded: '2025-03-30T02:55:19+00:00'
-            elementCondition: null
-            fieldUid: 5c005119-58f0-4eee-ad8c-32984a2686c3 # pilotes
-            handle: null
-            includeInCards: false
-            instructions: null
-            label: null
-            providesThumbs: false
-            required: false
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: b6711af0-c637-4d4f-bf95-e0026696a973
+            uid: 28556af4-1573-4470-b869-a02367700d82
             userCondition: null
             warning: null
             width: 100
         name: Content
-        uid: 38316f49-e725-4aae-8576-6685ba627d6c
+        uid: 35f388e0-67e5-4236-9b8f-c967893fc024
         userCondition: null
-handle: voituresStandard
+handle: pilotes
 hasTitleField: true
 icon: null
-name: 'Voitures standard'
+name: pilotes
 showSlugField: true
 showStatusField: true
 slugTranslationKeyFormat: null

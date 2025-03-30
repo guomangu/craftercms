@@ -1,0 +1,30 @@
+{# {% set pilotes = craft.entries()
+.section('pilotes')     
+.orderBy('dateCreated desc') 
+.limit(3)                 
+.all() %} #}
+
+
+
+{% if pilotes|length %}
+    <ul>
+        {% for pilote in pilotes %}
+            <li>
+                {# Lien vers le pilote individuel si vous avez configuré l'URI #}
+                {# <a href="{{ pilote.url }}"> #}
+                <h3>{{ pilote.title }}</h3> {# Affiche le titre (ou combinez marque/modèle) #}
+                <p> {{ pilote.nom }}</p> {# Affiche la marque #}
+                    {# Exemple: {{ voiture.marque }} {{ voiture.modele }} ({{ voiture.annee }}) #}
+                {# </a> #}
+                {# Afficher une image si elle existe #}
+                {% set image = pilote.imgpilote.one() %}
+                {% if image %}
+                     <img src="{{ image.getUrl({width: 100, height: 100, mode: 'crop'}) }}" alt="{{ image.title ?? voiture.title }}">
+                {% endif %}
+
+            <li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucun pilote n'a été ajouté pour le moment.</p>
+{% endif %}

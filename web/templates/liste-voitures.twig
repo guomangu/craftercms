@@ -27,7 +27,13 @@
                     {% if image %}
                          <img src="{{ image.getUrl({width: 100, height: 100, mode: 'crop'}) }}" alt="{{ image.title ?? voiture.title }}">
                     {% endif %}
+
+                    {% include "pilotes.twig" with {
+                        pilotes: voiture.pilotes,
+                        RANDOMVALUE: 'example'
+                    } %}
                 </li>
+                <hr> {# Séparateur visuel entre les voitures #}
             {% endfor %}
         </ul>
     {% else %}
