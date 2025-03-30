@@ -1,5 +1,5 @@
 {# templates/liste-voitures.twig #}
-{% extends "_layout.twig" %} {# Adaptez si votre layout principal a un autre nom #}
+{# {% extends "_layout.twig" %} Adaptez si votre layout principal a un autre nom #}
 
 {% block content %}
     <h1>Nos dernières voitures</h1>
@@ -7,9 +7,9 @@
     {# --- Section Liste des Voitures --- #}
     <h2>Derniers ajouts</h2>
     {% set latestVoitures = craft.entries()
-        .section('voitures')      {# Récupère les entrées de la section 'voitures' #}
-        .orderBy('dateCreated desc') {# Trie par date de création, la plus récente en premier #}
-        .limit(10)                 {# Limite aux 10 dernières (ajustez si besoin) #}
+        .section('voitures')     
+        .orderBy('dateCreated desc') 
+        .limit(10)                 
         .all() %}
 
     {% if latestVoitures|length %}
@@ -17,12 +17,13 @@
             {% for voiture in latestVoitures %}
                 <li>
                     {# Lien vers la voiture individuelle si vous avez configuré l'URI #}
-                    <a href="{{ voiture.url }}">
-                        {{ voiture.title }} {# Affiche le titre (ou combinez marque/modèle) #}
+                    {# <a href="{{ voiture.url }}"> #}
+                    <h3>{{ voiture.title }}</h3> {# Affiche le titre (ou combinez marque/modèle) #}
+                    <p> {{ voiture.marque }}</p> {# Affiche la marque #}
                         {# Exemple: {{ voiture.marque }} {{ voiture.modele }} ({{ voiture.annee }}) #}
-                    </a>
+                    {# </a> #}
                     {# Afficher une image si elle existe #}
-                    {% set image = voiture.photoVoiture.one() %}
+                    {% set image = voiture.photovoiture.one() %}
                     {% if image %}
                          <img src="{{ image.getUrl({width: 100, height: 100, mode: 'crop'}) }}" alt="{{ image.title ?? voiture.title }}">
                     {% endif %}
@@ -60,16 +61,24 @@
     {# Le formulaire pointe vers l'action intégrée de Craft pour sauvegarder les entrées #}
     <form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
         {{ csrfInput() }} {# Important pour la sécurité CSRF #}
-        {{ actionInput('entries/save-entry') }} {# Action Craft pour sauvegarder #}
+        {# {{ actionInput('entries/save-entry') }} #} {# Action Craft pour sauvegarder #}
+        {{ actionInput('guest-entries/save') }}
         {{ redirectInput('liste-voitures?success=1') }} {# Redirige vers cette même page après succès (optionnel) #}
-        {{ hiddenInput('sectionId', craft.sections.getSectionByHandle('voitures').id) }} {# ID de la section où sauvegarder #}
-        {{ hiddenInput('enabled', '1') }} {# Pour publier l'entrée directement (sinon, elle est sauvegardée comme brouillon) #}
+        {{ hiddenInput('sectionId', 1) }} {# ID de la section où sauvegarder #}
+        
+        {# {{ hiddenInput('enabled', '1') }} Pour publier l'entrée directement (sinon, elle est sauvegardée comme brouillon) #}
         {# Si vous n'avez qu'un seul type d'entrée, ce n'est pas strictement nécessaire, mais c'est plus sûr : #}
         {# {{ hiddenInput('entryTypeId', craft.sections.getSectionByHandle('voitures').getEntryTypes()[0].id) }} #}
 
+        {% set voitureEntryType = craft.entryTypes.getEntryTypeByHandle('default', 'voitures') %} {# Adaptez 'default' #}
+        {% if voitureEntryType %}
+            {{ hiddenInput('entryTypeId', voitureEntryType.id) }}
+        {% endif %}
+
+
         {# Champ Titre (si vous ne le générez pas automatiquement) #}
-        {# <label for="title">Titre:</label>
-           <input id="title" type="text" name="title" value="{{ entry.title ?? '' }}"><br> #}
+        <label for="title">Titre:</label>
+        <input id="title" type="text" name="title" value="{{ entry.title ?? '' }}" required><br>
 
         {# Champs personnalisés - IMPORTANT: utilisez fields[handleDuChamp] #}
         <label for="marque">Marque:</label>
@@ -78,23 +87,23 @@
         {% if entry is defined and entry.hasErrors('marque') %}<span class="error">{{ entry.getFirstError('marque') }}</span>{% endif %}
         <br>
 
-        <label for="modele">Modèle:</label>
+        {# <label for="modele">Modèle:</label>
         <input id="modele" type="text" name="fields[modele]" value="{{ entry.modele ?? '' }}">
         {% if entry is defined and entry.hasErrors('modele') %}<span class="error">{{ entry.getFirstError('modele') }}</span>{% endif %}
-        <br>
+        <br> #}
 
-        <label for="annee">Année:</label>
+        {# <label for="annee">Année:</label>
         <input id="annee" type="number" name="fields[annee]" value="{{ entry.annee ?? '' }}">
         {% if entry is defined and entry.hasErrors('annee') %}<span class="error">{{ entry.getFirstError('annee') }}</span>{% endif %}
-        <br>
+        <br> #}
 
-        <label for="description">Description:</label>
+        {# <label for="description">Description:</label>
         <textarea id="description" name="fields[description]">{{ entry.description ?? '' }}</textarea>
         {% if entry is defined and entry.hasErrors('description') %}<span class="error">{{ entry.getFirstError('description') }}</span>{% endif %}
-        <br>
+        <br> #}
 
         <label for="photoVoiture">Photo:</label>
-        <input id="photoVoiture" type="file" name="fields[photoVoiture]">
+        <input id="photoVoiture" type="file" name="fields[photovoiture]">
         {# La gestion des erreurs pour les fichiers est un peu plus complexe #}
         <br>
 

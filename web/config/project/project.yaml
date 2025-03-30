@@ -1,10 +1,19 @@
-dateModified: 1743291892
+dateModified: 1743300027
 email:
   fromEmail: aluligu@gmail.com
   fromName: a
   transportType: craft\mail\transportadapters\Sendmail
+fs:
+  imgs:
+    hasUrls: true
+    name: imgs
+    settings:
+      path: $DOCUMENT_ROOT/imgs
+    type: craft\fs\Local
+    url: '//localhost:8080/imgs'
 meta:
   __names__:
+    0d874f90-596b-4955-b5f0-c6c493421528: imgsvol # imgsvol
     03e942c5-fa2f-4d2a-b7e5-52766f07b3b2: a # a
     8a6cd0b3-d0ff-4c2b-9142-ff50b5cf8a16: a # a
     9b987a32-67f0-4c54-920b-73bf016c0372: photoVoiture # photoVoiture
@@ -12,6 +21,35 @@ meta:
     412d2b65-92f7-40dc-8dbf-e495840944c4: 'Voitures standard' # Voitures standard
     879ed238-6c41-49ca-bb35-e156a0f6b56a: Voitures # Voitures
     e5131bdd-7b21-4287-992b-d2504987a1a6: Marque # Marque
+plugins:
+  guest-entries:
+    edition: standard
+    enabled: true
+    schemaVersion: 2.1.0
+    settings:
+      enableCsrfProtection: '1'
+      entryVariable: entry
+      sections:
+        __assoc__:
+          -
+            - 879ed238-6c41-49ca-bb35-e156a0f6b56a # Voitures
+            -
+              __assoc__:
+                -
+                  - sectionUid
+                  - 879ed238-6c41-49ca-bb35-e156a0f6b56a # Voitures
+                -
+                  - allowGuestSubmissions
+                  - '1'
+                -
+                  - enabledByDefault
+                  - '1'
+                -
+                  - runValidation
+                  - '1'
+                -
+                  - authorUid
+                  - f2ddd9c2-0d1b-4341-9c50-69fa57b2a633
 system:
   edition: solo
   live: true
