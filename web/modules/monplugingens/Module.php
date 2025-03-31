@@ -69,31 +69,5 @@ class Module extends BaseModule
         );
     }
 
-    /**
-     * Fonction pour connecter un "Gens" en vérifiant le mot de passe.
-     * La logique interne de cette méthode ne change pas.
-     *
-     * @param string $identifier
-     * @param string $password
-     * @param string $identifierFieldHandle (default 'mail')
-     * @param string $passwordFieldHandle (default 'pass')
-     * @return Entry|null
-     */
-    public function loginGens(string $identifier, string $password, string $identifierFieldHandle = 'mail', string $passwordFieldHandle = 'pass'): ?Entry
-    {
-        // Rechercher l'entrée
-        $gensEntry = Entry::find()
-            ->section('gens') // Adapter 'gens' si besoin
-            ->where(['field.' . $identifierFieldHandle => $identifier])
-            ->one();
-
-        // Vérifier l'entrée et le mot de passe
-        if ($gensEntry) {
-            $hashedPassword = $gensEntry->getFieldValue($passwordFieldHandle); // Adapter 'pass' si besoin
-            if ($hashedPassword && password_verify($password, $hashedPassword)) {
-                return $gensEntry; // Succès
-            }
-        }
-        return null; // Échec
-    }
+    
 }

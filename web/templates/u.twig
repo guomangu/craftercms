@@ -1,4 +1,4 @@
-{% set emailDepuisCookie = craft.app.request.cookies.get('eemailUtilisateur') %}
+{% set emailDepuisCookie = craft.app.session.get('loggedInGensId') %}
 
 
 
@@ -12,18 +12,49 @@
 {% else %}
     <p><strong>Veuillez vous connecter.</strong></p>
     {# Formulaire de connexion #}
-    <form id="connect" method="post" action="persophp/u.php">
-        {{ csrfInput() }}
+    <form id="connect" method="post">
+        {# {{ actionInput('guest-entries/save') }} #}
+        {# {{ hiddenInput('sectionId', 3) }} ID de la section où sauvegarder #}
+        {# <input type="hidden" name="action" value="monplugingens/AuthController/actionLogin"> #}
+        <input type="hidden" name="action" value="actions/monplugingens/AuthController/actionTest">
+        {{ csrfInput() }} {# Important pour la sécurité CSRF #}
+
         <div>
             <label for="email">Email :</label>
-            <input type="email" id="email" name="email" required>
+            <input type="email" id="email" name="fields[mail]" required>
         </div>
         <div>
             {# Changer le type en password pour masquer la saisie #}
             <label for="nom">Mot de passe :</label>
-            <input type="password" id="nom" name="nom" required>
+            <input type="password" id="nom" name="fields[pass]" required>
         </div>
         <button type="submit">Envoyer</button>
     </form>
+
+    {% if errors is defined and errors.password is defined %}
+        <ul class="errors">
+            {% for error in errors.password %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
     {# {% include "users.twig" %} #} {# Si le formulaire est dans un autre fichier #}
+{% endif %}
+
+
+
+
+
+
+{# Afficher les erreurs générales (ex: identifiants incorrects) #}
+{% if errors is defined and errors.general is defined %}
+    <ul class="errors">
+        {% for error in errors.general %}
+            <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{# Afficher un message d'erreur global si disponible (ex: via flash messages) #}
+{% if craft.app.session.hasFlash('error') %}
+    <p class="error">{{ craft.app.session.getFlash('error') }}</p>
 {% endif %}
