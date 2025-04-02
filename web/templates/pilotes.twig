@@ -36,29 +36,9 @@
                 {% endif %}
             {# <li> #}
 
-            {% if user %}
             
-            <form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
-                {{ csrfInput() }} {# Important pour la sécurité CSRF #}
-                {# {{ actionInpust('guest-entries/save') }} #}
-                {{ actionInput('entries/save-entry') }}
-                {{ redirectInput('liste-voitures?success=22') }} {# Redirige vers cette même page après succès (optionnel) #}
-
-                {# Champs du deuxième formulaire #}
-                {{ hiddenInput('sectionId', 4) }}
-                {# {{ hiddenInput('entryId', pilote.id) }} #}
-                {# <input type="hidden" name="title" value="{{ pilote.title ?? null }}"> #}
-                <input type="hidden" name="fields[gens][]" value="{{ user.id }}">
-                <input type="hidden" name="fields[pilotes][]" value="{{ pilote.id }}">
-                <input type="hidden" name="slug" value="{{ pilote.slug ~ user.slug ?? null }}">
-                {# {{ hiddenInput('entryId', user.id) }} #}
-                {# <input type="hidden" name="fields[pilotes][]" value="{{ pilote.id ?? null }}"> #}
-                {# <input type="hidden" name="fields[gens][0][pilotes][]" value="{{ pilote.id ?? null }}"> #}
-                <input type="submit" value="s'abonner">
-            </form>
-            {% endif %}
             <hr>
-            <p>abonnés : {{user}}</p>
+            <p>connecté : {{user}}</p>
 
 
             {% set pilo = craft.entries().section('pilogens').pilotes(pilotes.id).all() %}
@@ -76,9 +56,66 @@
             </pre> #}
             {% set allGensEntries = craft.entries().section('gens').id(allGensIds).all() %}
 
+            {% set userIsABO = false %}
             {% for g in allGensEntries %}
                 <p>-{{ g }}</p>
+
+
+                {% if g.id is defined and g.id == user.id %}
+                    {% set userIsABO = true %}
+                {% endif %}
             {% endfor %}
+
+
+
+            {% if user %}
+
+                {% if userIsABO %}
+                {# {% set pilouser = craft.entries().section('pilogens').pilotes(pilotes.id).gens(user.id).one() %} #}
+                {% set pi = craft.entries()
+                .section('pilogens')
+                .relatedTo({
+                    targetElement: pilote,
+                    field: 'pilotes'
+                })
+                .relatedTo({
+                    targetElement: user,
+                    field: 'gens'
+                })
+                .one() %}
+                {# <pre>
+                    {{ dump(pilote.id) }}
+                </pre> #}
+                <form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
+                    {{ csrfInput() }} {# Important pour la sécurité CSRF #}
+                    {{ actionInput('entries/save-entry') }}
+                    {{ redirectInput('liste-voitures') }} {# Redirige vers cette même page après succès (optionnel) #}
+                    <input type="hidden" name="enabled" value="0"> 
+                    {# {{ hiddenInput('sectionId', 4) }} #}
+                    {{ hiddenInput('entryId', pi.id) }}
+                    <input type="submit" value="s'desabonner">
+                </form>        
+                {% else %}
+                <form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
+                    {{ csrfInput() }} {# Important pour la sécurité CSRF #}
+                    {# {{ actionInpust('guest-entries/save') }} #}
+                    {{ actionInput('entries/save-entry') }}
+                    {{ redirectInput('liste-voitures?success=22') }} {# Redirige vers cette même page après succès (optionnel) #}
+
+                    {# Champs du deuxième formulaire #}
+                    {{ hiddenInput('sectionId', 4) }}
+                    {# {{ hiddenInput('entryId', pilote.id) }} #}
+                    {# <input type="hidden" name="title" value="{{ pilote.title ?? null }}"> #}
+                    <input type="hidden" name="fields[gens][]" value="{{ user.id }}">
+                    <input type="hidden" name="fields[pilotes][]" value="{{ pilote.id }}">
+                    <input type="hidden" name="slug" value="{{ pilote.slug ~ user.slug ?? null }}">
+                    {# {{ hiddenInput('entryId', user.id) }} #}
+                    {# <input type="hidden" name="fields[pilotes][]" value="{{ pilote.id ?? null }}"> #}
+                    {# <input type="hidden" name="fields[gens][0][pilotes][]" value="{{ pilote.id ?? null }}"> #}
+                    <input type="submit" value="s'abonner">
+                </form>                
+                {% endif %}
+            {% endif %}
     </ul>
 {% else %}
     <p>Aucun pilote n'a été ajouté pour le moment.</p>
