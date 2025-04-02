@@ -3,6 +3,7 @@ namespace modules\monplugingens\controllers;
 
 use Craft;
 use craft\web\Controller;
+use craft\elements\Entry;
 use modules\monplugingens\Module as gensmodule; // Importer la classe du Module
 use yii\web\Response;
 
@@ -20,6 +21,8 @@ class AuthController extends Controller
     {
         $request = Craft::$app->getRequest();
         if ($request->getIsPost()) {
+            $valuemail=Craft::$app->request->post('mail');
+            $valuepass=Craft::$app->request->post('pass');
             // ... récupérer loginIdentifier et password ...
 
             // ***** CHANGEMENT : Récupérer l'instance du MODULE *****
@@ -27,9 +30,9 @@ class AuthController extends Controller
             $gensModule = Craft::$app->getModule('monplugingens'); // Utiliser le handle défini dans app.php
 
             if ($gensModule) {
-                $loggedInGens = $gensModule->loginGens(
-                    $loginIdentifier,
-                    $password,
+                $loggedInGens = $this->loginGens(
+                    $valuemail,
+                    $valuepass,
                     'mail', // Adapter si besoin
                     'pass'  // Adapter si besoin
                 );
@@ -38,23 +41,23 @@ class AuthController extends Controller
                     // Connexion réussie ...
                     // ... (logique de session, redirection) ...
                      Craft::$app->getSession()->set('loggedInGensId', $loggedInGens->id);
-                     return $this->redirectToReferrer();
-                    //  return $this->redirectTo('/espace-membre');
+                     return $this->redirect('/u');
                 } else {
                     // Échec ...
                     // ... (message d'erreur, redirection) ...
                      Craft::$app->getSession()->setError("Identifiant ou mot de passe incorrect.");
-                     return $this->redirectToReferrer();
+                     return $this->redirect('/u');
                     //  return $this->redirectTo('/connexion');
                 }
             } else {
                  Craft::$app->getSession()->setError("Erreur interne du module.");
                  Craft::error('Module monplugingens non trouvé ou inactif.');
-                 return $this->redirectTo('/connexion');
+                 return $this->redirect('/u');
             }
         }
         // ... afficher le formulaire ...
-        return $this->redirectToReferrer();
+        Craft::error('not post request boiiii.');
+        return $this->redirect('/u');
         //  return $this->renderTemplate('chemin/vers/template/loginForm');
     }
 
@@ -73,7 +76,7 @@ class AuthController extends Controller
         // Rechercher l'entrée
         $gensEntry = Entry::find()
             ->section('gens') // Adapter 'gens' si besoin
-            ->where(['field.' . $identifierFieldHandle => $identifier])
+            ->where([$identifierFieldHandle => $identifier])
             ->one();
 
         // Vérifier l'entrée et le mot de passe
@@ -89,7 +92,7 @@ class AuthController extends Controller
      public function actionLogout(): Response
      {
          Craft::$app->getSession()->remove('loggedInGensId');
-         return $this->redirectToReferrer();
+         return $this->redirect('/u');
         //  reload();
         //  return $this->redirectTo('/');
      }

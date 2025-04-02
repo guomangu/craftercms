@@ -1,4 +1,4 @@
-dateModified: 1743376184
+dateModified: 1743549183
 email:
   fromEmail: aluligu@gmail.com
   fromName: a
@@ -15,15 +15,20 @@ meta:
   __names__:
     0d874f90-596b-4955-b5f0-c6c493421528: imgsvol # imgsvol
     1dbdb624-0e6e-4f1a-b048-5aed379070c7: nom # nom
+    2b274626-6d0d-426b-87d0-0f38b76388bd: pilogens # pilogens
     3adee4e4-e6a6-4f1d-85ce-21d122603d38: mail # mail
+    3e570fea-12ba-4b44-beb1-5fffeed5f4c5: pilogens # pilogens
     03e942c5-fa2f-4d2a-b7e5-52766f07b3b2: a # a
     5c005119-58f0-4eee-ad8c-32984a2686c3: pilotes # pilotes
     8a6cd0b3-d0ff-4c2b-9142-ff50b5cf8a16: a # a
     9b987a32-67f0-4c54-920b-73bf016c0372: photoVoiture # photoVoiture
     59aacfcf-933c-4521-a3c9-e25dff69e354: Annee # Annee
+    61e4ba75-3c17-4a7f-acc6-322b97ee9528: gens # gens
+    76a9e058-da20-4589-b4b7-2d5f468a8456: piloture # piloture
     412d2b65-92f7-40dc-8dbf-e495840944c4: 'Voitures standard' # Voitures standard
     879ed238-6c41-49ca-bb35-e156a0f6b56a: Voitures # Voitures
     9434ca7d-d978-4b3e-b98c-e00e8c4aedaf: gens # gens
+    029794bd-8c92-407b-be2c-2a35cb09533b: piloture # piloture
     7399850e-5b21-4b14-8694-29f4ac63d0fc: pass # pass
     ba425b92-d80c-4d12-874e-0b64d61cd292: pilotes # pilotes
     bd1d9f29-cc92-44e1-9fc4-44eb474992cf: imgpilote # imgpilote
@@ -86,6 +91,44 @@ plugins:
                 -
                   - sectionUid
                   - ff892292-fe95-4c7a-aa41-5c4ae2dc96fd # pilotes
+                -
+                  - allowGuestSubmissions
+                  - '1'
+                -
+                  - enabledByDefault
+                  - '1'
+                -
+                  - runValidation
+                  - '1'
+                -
+                  - authorUid
+                  - f2ddd9c2-0d1b-4341-9c50-69fa57b2a633
+          -
+            - 3e570fea-12ba-4b44-beb1-5fffeed5f4c5 # pilogens
+            -
+              __assoc__:
+                -
+                  - sectionUid
+                  - 3e570fea-12ba-4b44-beb1-5fffeed5f4c5 # pilogens
+                -
+                  - allowGuestSubmissions
+                  - '1'
+                -
+                  - enabledByDefault
+                  - '1'
+                -
+                  - runValidation
+                  - '1'
+                -
+                  - authorUid
+                  - f2ddd9c2-0d1b-4341-9c50-69fa57b2a633
+          -
+            - 029794bd-8c92-407b-be2c-2a35cb09533b # piloture
+            -
+              __assoc__:
+                -
+                  - sectionUid
+                  - 029794bd-8c92-407b-be2c-2a35cb09533b # piloture
                 -
                   - allowGuestSubmissions
                   - '1'

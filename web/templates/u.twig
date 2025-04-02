@@ -1,32 +1,44 @@
+{# Si l'utilisateur est connecté, récupérer ses informations #}
 {% set emailDepuisCookie = craft.app.session.get('loggedInGensId') %}
 
+{# Vérifier si l'utilisateur est connecté #}
+{% if emailDepuisCookie is not null %}
+    {# L'utilisateur est connecté, vous pouvez afficher ses informations #}
+    {% set entry = craft.entries().id(emailDepuisCookie).one() %}
+{% else %}
+    {# L'utilisateur n'est pas connecté, afficher un message ou rediriger #}
+    <p><strong>Aucun utilisateur connecté.</strong></p>
+{% endif %}
+
+{# Récupérer l'entrée associée à l'utilisateur #}
 
 
-{% if emailDepuisCookie %}
-    <p><strong>Connecté en tant que : {{ emailDepuisCookie }}</strong></p>
+{% if entry %}
+    <p><strong>Connecté en tant que : {{ entry }}</strong></p>
     {# Formulaire de déconnexion #}
-    <form method="post" action="">
+    <form method="post" action="{{ actionUrl('/monplugingens/auth/logout') }}">
         {{ csrfInput() }}
         <button name="deconnection" type="submit">Déconnexion</button>
     </form>
 {% else %}
     <p><strong>Veuillez vous connecter.</strong></p>
     {# Formulaire de connexion #}
-    <form id="connect" method="post">
+    <form id="connect" method="post" action="{{ actionUrl('/monplugingens/auth/login') }}">
         {# {{ actionInput('guest-entries/save') }} #}
         {# {{ hiddenInput('sectionId', 3) }} ID de la section où sauvegarder #}
         {# <input type="hidden" name="action" value="monplugingens/AuthController/actionLogin"> #}
-        <input type="hidden" name="action" value="actions/monplugingens/AuthController/actionTest">
+        {# <input type="hidden" name="action" value="actions/monplugingens/AuthController/actionTest"> #}
+        {# {{ actionInput('/actions/monplugingens/AuthController/actionTest') }} #}
         {{ csrfInput() }} {# Important pour la sécurité CSRF #}
 
         <div>
             <label for="email">Email :</label>
-            <input type="email" id="email" name="fields[mail]" required>
+            <input type="email" id="email" name="mail" required>
         </div>
         <div>
             {# Changer le type en password pour masquer la saisie #}
             <label for="nom">Mot de passe :</label>
-            <input type="password" id="nom" name="fields[pass]" required>
+            <input type="password" id="nom" name="pass" required>
         </div>
         <button type="submit">Envoyer</button>
     </form>
