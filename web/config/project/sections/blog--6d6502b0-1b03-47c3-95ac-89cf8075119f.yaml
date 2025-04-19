@@ -2,10 +2,10 @@ defaultPlacement: end
 enableVersioning: true
 entryTypes:
   -
-    uid: 412d2b65-92f7-40dc-8dbf-e495840944c4 # Voitures standard
-handle: voitures
+    uid: 7a37312f-948f-4444-b01a-fdc18741916a # blog
+handle: blog
 maxAuthors: 1
-name: voitures
+name: Blog
 previewTargets:
   -
     __assoc__:
@@ -23,6 +23,11 @@ siteSettings:
   03e942c5-fa2f-4d2a-b7e5-52766f07b3b2: # a
     enabledByDefault: true
     hasUrls: true
-    template: voitures/_entry.twig
-    uriFormat: 'voitures/{slug}'
+    template: blog/_entry.twig
+    uriFormat: 'blog/{slug}'
+  a7c10eaa-616c-4edf-8aa6-2ddc2e17d921: # agendafriends
+    enabledByDefault: true
+    hasUrls: true
+    template: blog/_entry.twig
+    uriFormat: 'blog/{slug}'
 type: channel

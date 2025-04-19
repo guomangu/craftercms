@@ -1,0 +1,137 @@
+{% block content %}
+
+{% set latestaction = craft.entries()
+        .section('action')
+        .relatedTo({
+            targetElement: mom,
+            field: 'moment'
+        })
+        .orderBy('dateCreated DESC')
+        .limit(10)
+        .all() %}
+
+    <div class="related-actions mb-3"> {# Marge inférieure réduite #}
+        {# Utilisation d'un titre plus petit, adapté à l'inclusion dans une carte #}
+        <h6 class="mb-2">Actions Associées :</h6>
+
+        {% if latestaction|length %}
+            {# Utilisation d'un List Group pour un affichage compact #}
+            <ul class="list-group list-group-flush">
+
+
+
+
+                
+
+
+                {% for action in latestaction %}
+                    {% set image = action.img.one() %}
+                    {# Essayez de récupérer une URL pour l'action, adaptez 'action.url' à votre structure de données #}
+                    {% set actionUrl = "b/" ~ action.id ?? null %} 
+                    {% set Tag = actionUrl ? 'a' : 'div' %} {# La carte sera un lien 'a' si actionUrl existe, sinon une 'div' #}
+
+                    {# Carte Bootstrap horizontale #}
+                    <{{ Tag }} 
+                        {% if actionUrl %}href="{{ actionUrl }}"{% endif %} 
+                        class="card border-danger mb-3 overflow-hidden {% if actionUrl %}text-decoration-none{% endif %}" {# mb-3 pour l'espacement, overflow pour les coins arrondis, pas de soulignement si lien #}
+                    >
+                        <div class="row g-0">
+                            {# Colonne pour l'image (taille fixe ou proportionnelle) #}
+                            <div class="col-3 col-sm-2 d-flex align-items-center justify-content-center" style="max-height: 100px;"> {# Ajustez col-* et max-height si besoin #}
+                                {% if image %}
+                                    <img src="{{ image.getUrl({width: 120, height: 120, mode: 'crop', quality: 75}) }}" {# Taille image source légèrement plus grande, qualité ajustée #}
+                                        alt="{{ image.alt ?? image.title ?? action.title }}"
+                                        class="img-fluid rounded-start w-100 h-100" {# img-fluid + w/h-100 + object-fit pour remplir #}
+                                        style="object-fit: cover;">
+                                {% else %}
+                                    {# Placeholder si pas d'image #}
+                                    <div class="bg-light rounded-start w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-image text-muted" viewBox="0 0 16 16">
+                                        <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                                        <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/>
+                                    </svg>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            {# Colonne pour le contenu texte #}
+                            <div class="col-9 col-sm-10"> {# Prend le reste de l'espace #}
+                                <div class="card-body py-2 px-3"> {# Padding vertical réduit, horizontal standard #}
+                                    
+                                    {# Titre de l'action #}
+                                    <h6 class="card-title mb-1"><strong>{{ action.title }}</strong></h6>
+                                    
+                                    {# Informations secondaires (Ville, Zone) #}
+                                    <p class="card-text mb-0">
+                                        <small class="text-muted">
+                                            {{ action.city }} - {{ action.zone }}
+                                            {# Vous pourriez ajouter une date ici aussi #}
+                                            {# {% if action.date %} - {{ action.date|date("d/m/Y") }} {% endif %} #}
+                                        </small>
+                                    </p>
+
+                                    {# Autres détails éventuels ici #}
+                                    {# <p class="card-text"><small>Autre détail...</small></p> #}
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </{{ Tag }}>
+
+                {% else %}
+                    {# Message si la liste est vide #}
+                    <div class="alert alert-light" role="alert">
+                        Aucune action récente à afficher.
+                    </div>
+                {% endfor %}
+            </ul>
+        {% else %}
+            {# Message si aucune action, texte plus petit #}
+            <p class="text-muted mb-0"><small><em>Aucune action associée trouvée.</em></small></p>
+        {% endif %}
+    </div>
+
+    {# Séparateur optionnel, peut être utile visuellement #}
+    <hr class="my-3">
+
+    {# --- Section Formulaire d'Ajout --- #}
+    {# Pas de marge externe (m-*) car géré par le parent ou les mb-*/mt-* internes #}
+    {# Ajout d'un ID unique au formulaire si plusieurs instances sont possibles sur la page #}
+    <form method="post" id="action-form-{{ mom.id }}" class="add-action-form" accept-charset="UTF-8" enctype="multipart/form-data">
+        {{ csrfInput() }}
+        {{ actionInput('entries/save-entry') }}
+        {{ hiddenInput('sectionId', 7) }} {# Assurez-vous que 7 est le bon ID de section #}
+        {{ hiddenInput('enabled', '1') }}
+        {# Assurez-vous que 'mom' est disponible et a un 'id' #}
+        <input type="hidden" name="fields[moment][]" value="{{ mom.id }}">
+
+        <h6 class="mb-3">Ajouter une Action :</h6>
+
+        {# Utilisation de form-control-sm pour des champs plus petits, économisant l'espace vertical #}
+        <div class="mb-2"> {# Marge inférieure réduite #}
+            {# ID et For uniques en ajoutant mom.id pour éviter les conflits si plusieurs formulaires #}
+            <label for="title-{{ mom.id }}" class="form-label visually-hidden">Action:</label> {# visually-hidden cache le label mais le garde pour l'accessibilité #}
+            <input id="title-{{ mom.id }}" type="text" name="title" class="form-control form-control-sm" placeholder="Nom de l'action" required>
+        </div>
+
+        <div class="mb-2">
+            <label for="city-{{ mom.id }}" class="form-label visually-hidden">Ville:</label>
+            <input id="city-{{ mom.id }}" type="text" name="fields[city]" class="form-control form-control-sm" placeholder="Ville" required>
+        </div>
+
+        <div class="mb-2">
+            <label for="zone-{{ mom.id }}" class="form-label visually-hidden">Endroit:</label>
+            <input id="zone-{{ mom.id }}" type="text" name="fields[zone]" class="form-control form-control-sm" placeholder="Endroit précis" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="img" class="form-label">Photo:</label>
+            <input id="img" type="file" name="fields[img]" class="form-control">
+        </div>
+
+        {# Bouton plus petit (btn-sm) et pleine largeur (w-100) pour un accès facile sur mobile #}
+        <button type="submit" class="btn btn-dark btn-sm w-100 mt-2">Ajouter</button>
+    </form>
+
+{% endblock %}
+{# --- Fin du template a.twig --- #}

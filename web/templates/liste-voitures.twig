@@ -14,6 +14,7 @@
             .all() %}
 
         {% if latestVoitures|length %}
+     
             <ul class="list-unstyled">
                 {% for voiture in latestVoitures %}
                     <li class="mb-3 border-bottom py-2">
@@ -35,26 +36,44 @@
                                     {# Exemple: {{ voiture.marque }} {{ voiture.modele }} ({{ voiture.annee }}) #}
                                 {# </a> #}
 
+                                
+
+                                {% include "test-add.twig" with {
+                                    voiture: voiture
+                                } %}
+
+
+
                                 <div class="mt-2">
                                     <strong>Pilotes associés:</strong>
                                     {% set pilo = craft.entries().section('piloture').voitures(voiture.id).all() %}
                                     {% if pilo|length %}
                                         <ul class="list-inline">
-                                            {% for item in pilo %}
-                                                {% set pilote = craft.entries().section('pilotes').pilotes(item.pilotes.id).one() %}
-                                                {% if pilote %}
+                                            {% for item22 in pilo %}
+                                                {# <pre>
+                                                    {{ dump(item22) }}
+                                                </pre> #}
+                                                {% set piloteId = item22.pilotes[0].id %}
+                                                {% set pilote22 = null %}
+                                                {% set pilote22 = craft.entries().section('pilotes').id(piloteId).one() %}
+                                                {% if pilote22 %}
                                                     <li class="list-inline-item">
                                                         {% include "pilotes.twig" with {
-                                                            pilote: pilote,
-                                                            RANDOMVALUE: 'example'
+                                                            pilote: pilote22
                                                         } %}
                                                     </li>
                                                 {% endif %}
+                                                 {# Réinitialiser la variable pour la prochaine itération #}
                                             {% endfor %}
                                         </ul>
                                     {% else %}
                                         <p class="text-muted">Aucun pilote associé pour le moment.</p>
                                     {% endif %}
+
+                                    {% include "search-pilotes.twig" with {
+                                        voiture: voiture,
+                                        RANDOMVALUE: 'example2'
+                                    } %}
                                 </div>
                             </div>
                         </div>
@@ -118,10 +137,12 @@
             <div class="mb-3">
                 <label for="photoVoiture" class="form-label">Photo:</label>
                 <input id="photoVoiture" type="file" name="fields[photovoiture]" class="form-control">
-                {# La gestion des erreurs pour les fichiers est un peu plus complexe #}
             </div>
 
             <button type="submit" class="btn btn-primary">Ajouter la voiture</button>
         </form>
     </div>
 {% endblock %}
+
+
+

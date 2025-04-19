@@ -1,0 +1,133 @@
+{# Inclusion de Bootstrap (vous l'avez déjà fait) #}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+{% block content %}
+<div class="container mt-4 mb-5"> {# Conteneur principal avec marges verticales #}
+
+    {# --- Section Détail de l'Action Principale --- #}
+    {# Récupération de l'action via l'ID 'number' #}
+    {% set latestaction = craft.entries()
+        .section('action')
+        .id(number)
+        .one() %}
+
+    {% if latestaction %}
+        {# Utilisation d'une carte pour présenter l'action principale #}
+        <div class="card mb-4 shadow-sm overflow-hidden"> {# overflow-hidden pour les coins arrondis de l'image #}
+            <div class="row g-0"> {# Pas d'espacement entre les colonnes de l'image et du texte #}
+                <div class="col-md-5 col-lg-4"> {# Colonne pour l'image, taille différente sur md et lg #}
+                    {% set image = latestaction.img.one() %}
+                    {% if image %}
+                        {# Image responsive, couvre la hauteur possible #}
+                        <img src="{{ image.getUrl({width: 600, height: 450, mode: 'crop'}) }}" class="img-fluid h-100 object-fit-cover" alt="{{ image.title ?? latestaction.title }}">
+                    {% else %}
+                        {# Placeholder si pas d'image #}
+                        <div class="bg-secondary-subtle d-flex align-items-center justify-content-center h-100">
+                            <span class="text-muted p-3">Aucune image</span>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-7 col-lg-8"> {# Colonne pour le texte #}
+                    <div class="card-body">
+                        <h1 class="card-title h2">{{ latestaction.title }}</h1> {# Titre principal de l'action #}
+                        {# nl2br pour respecter les sauts de ligne de la description #}
+                        <p class="card-text lead">{{ latestaction.description|nl2br }}</p>
+                        {# Vous pouvez ajouter d'autres champs de 'latestaction' ici si nécessaire #}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# --- Section Articles Associés --- #}
+        <h2 class="mt-5 mb-4">Articles Associés</h2> {# Titre pour la section des articles liés #}
+
+        {% set latestart = craft.entries()
+            .section('article')
+            .relatedTo({
+                targetElement: latestaction,
+                field: 'action'
+            })
+            .orderBy('dateCreated DESC')
+            .limit(9) 
+            .all() %}
+
+        {% if latestart|length %}
+            {# Grille responsive pour les cartes d'articles #}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+                {% for art in latestart %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm"> {# Carte pour chaque article, hauteur égale #}
+                            {% set artImage = art.img.one() %}
+                            {% if artImage %}
+                                <img src="{{ artImage.getUrl({width: 400, height: 250, mode: 'crop'}) }}" class="card-img-top" alt="{{ artImage.title ?? art.title }}">
+                            {% endif %}
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ art.title }}</h5>
+                                {# Affiche un extrait du texte de l'article. strip_tags enlève le HTML, slice coupe #}
+                                <p class="card-text flex-grow-1">{{ art.art|striptags|slice(0, 120) }}{% if art.art|length > 120 %}...{% endif %}</p>
+                                {# Optionnel: Lien vers l'article complet #}
+                                {# <a href="{{ art.url }}" class="btn btn-outline-primary btn-sm mt-auto align-self-start">Lire plus</a> #}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted mb-5">Aucun article associé trouvé pour cette action.</p>
+        {% endif %}
+
+
+        {# --- Section Formulaire Ajout Article --- #}
+        <div class="card shadow-sm mb-5">
+            <div class="card-header">
+                <h3 class="mb-0 h4">Ajouter un Nouvel Article</h3>
+            </div>
+            <div class="card-body bg-light"> {# Fond léger pour distinguer le formulaire #}
+                {# ID unique pour le formulaire basé sur l'action parente #}
+                <form method="post" id="article-form-{{ latestaction.id }}" accept-charset="UTF-8" enctype="multipart/form-data">
+                    {{ csrfInput() }}
+                    {{ actionInput('entries/save-entry') }}
+                    {{ hiddenInput('sectionId', 8) }} {# ID de la section 'article' #}
+                    {{ hiddenInput('enabled', '1') }}
+                    {# Champ caché liant ce nouvel article à l'action actuelle #}
+                    <input type="hidden" name="fields[action][]" value="{{ latestaction.id }}">
+
+                    {# Champ Titre (obligatoire) #}
+                    <div class="mb-3">
+                        <label for="article-title-{{ latestaction.id }}" class="form-label">Titre de l'article :</label>
+                        <input id="article-title-{{ latestaction.id }}" type="text" name="title" class="form-control" required>
+                    </div>
+
+                    {# Champ Texte de l'article (obligatoire) - Utilisation de textarea #}
+                    <div class="mb-3">
+                        <label for="article-art-{{ latestaction.id }}" class="form-label">Texte de l'article :</label>
+                        <textarea id="article-art-{{ latestaction.id }}" name="fields[art]" class="form-control" rows="5" required></textarea>
+                        {# J'ai changé l'input texte 'city' en textarea pour le champ 'art', ce qui semble plus logique #}
+                    </div>
+
+                    {# Champ Image (optionnel) #}
+                    <div class="mb-3">
+                        <label for="article-img-{{ latestaction.id }}" class="form-label">Photo (optionnelle) :</label>
+                        {# Utilisation de form-control standard, pas sm ici pour la cohérence #}
+                        <input id="article-img-{{ latestaction.id }}" type="file" name="fields[img]" class="form-control">
+                    </div>
+
+                    {# Bouton de soumission pleine largeur #}
+                    <button type="submit" class="btn btn-dark w-100">Ajouter l'Article</button>
+                </form>
+            </div>
+        </div>
+
+    {% else %}
+        {# Message si l'action principale n'est pas trouvée #}
+        <div class="alert alert-danger" role="alert">
+          <h4 class="alert-heading">Action non trouvée !</h4>
+          <p>L'action avec l'identifiant <strong>{{ number }}</strong> n'a pas pu être trouvée.</p>
+          <hr>
+          <p class="mb-0">Veuillez vérifier l'URL ou retourner à la page précédente.</p>
+        </div>
+    {% endif %} {# Fin du if latestaction #}
+
+</div> {# Fin container #}
+{% endblock %}

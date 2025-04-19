@@ -1,7 +1,7 @@
 columnSuffix: null
-handle: voitures
+handle: gensfav
 instructions: null
-name: voitures
+name: gensFav
 searchable: false
 settings:
   allowSelfRelations: false
@@ -13,7 +13,7 @@ settings:
   showCardsInGrid: false
   showSiteMenu: false
   sources:
-    - 'section:879ed238-6c41-49ca-bb35-e156a0f6b56a' # voitures
+    - 'section:9434ca7d-d978-4b3e-b98c-e00e8c4aedaf' # gens
   targetSiteId: null
   validateRelatedElements: false
   viewMode: list

@@ -1,0 +1,82 @@
+{% block content %}
+
+
+
+{# Si l'utilisateur est connecté, récupérer ses informations #}
+{% set emailDepuisCookie = craft.app.session.get('loggedInGensId') %}
+
+{# Vérifier si l'utilisateur est connecté #}
+{% if emailDepuisCookie is not null %}
+    {# L'utilisateur est connecté, vous pouvez afficher ses informations #}
+    {% set user = craft.entries().id(emailDepuisCookie).one() %}
+{% else %}
+    {# L'utilisateur n'est pas connecté, afficher un message ou rediriger #}
+    <p><strong>Aucun utilisateur connecté.</strong></p>
+{% endif %}
+
+{% set latestgroupe = craft.entries()
+.section('groupe')
+.relatedTo({
+    targetElement: user,
+    field: 'gensinscrit'
+})
+.orderBy('dateCreated DESC')
+.limit(10)
+.all() %}
+
+{% for g in latestgroupe %}
+<a href="m/{{ g.id }}">
+    {{g.title}}
+    {{g.art}}
+    {{g.zone}}
+    {% set image = g.img.one() %}
+    {% if image %}
+        <img src="{{ image.getUrl({width: 200, height: 150, mode: 'crop'}) }}" alt="{{ image.title ?? g.title }}">
+    {% else %}
+        <div class="bg-light text-center p-3 rounded">Pas d'image</div>
+    {% endif %}
+</a>
+{% endfor %}
+
+
+{% if user %}
+<form method="post" class="m-5" accept-charset="UTF-8" enctype="multipart/form-data">
+    {{ csrfInput() }} {# Important pour la sécurité CSRF #}
+    {{ actionInput('entries/save-entry') }} {# Action Craft pour sauvegarder #}
+    {# {{ actionInput('guest-entries/save') }} #}
+    {{ hiddenInput('sectionId', 12) }} {# ID de la section où sauvegarder #}
+    {{ hiddenInput('enabled', '1') }}
+
+    <div class="mb-3">
+        <label for="title" class="form-label">titre de l'Agenda:</label>
+        <input id="title" type="text" name="title" class="form-control" required>
+    </div>
+
+    <hr> {# Séparateur visuel #}
+
+    <div class="mb-3">
+        <label class="form-label">description de l'Agenda</label>
+        <input type="text" name="fields[art]" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">zone de l'Agenda</label>
+        <input type="text" name="fields[zone]" class="form-control" required>
+    </div>
+
+    <input type="hidden" name="fields[gensadmin][]" value={{user.id}} class="form-control" required>
+    <input type="hidden" name="fields[gensinscrit][]" value={{user.id}} class="form-control" required>
+
+    <div class="mb-3">
+        <label for="img" class="form-label">Photo:</label>
+        <input id="img" type="file" name="fields[img]" class="form-control" required>
+    </div>
+
+    <input type="submit" value="Ajouter l'Agenda" class="btn btn-primary"> 
+</form>
+
+{% endif %}
+
+
+
+{% endblock %}
