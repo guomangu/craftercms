@@ -45,8 +45,15 @@
 
 </div> {# Fin du conteneur principal #}
 
+<br>
+<button class="btn" style="display: flex; place-self: center;" type="button" data-bs-toggle="collapse" data-bs-target="#p-form-{{ groupe.id }}" aria-expanded="false" aria-controls="#p-form-{{ groupe.id }}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="red" class="bi bi-plus-circle" viewBox="0 0 16 16">
+        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>  
+    </svg>
+</button>
 
-<form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
+<form method="post" id="p-form-{{ groupe.id }}" class="card card-body collapse border-danger" accept-charset="UTF-8" enctype="multipart/form-data">
     {{ csrfInput() }} {# Important pour la sécurité CSRF #}
     {# {{ actionInpust('guest-entries/save') }} #}
     {{ actionInput('entries/save-entry') }}
@@ -64,25 +71,57 @@
 
     {# <input type="hidden" name="title" value="{{groupe.title}}"> #}
 
-    <input placeholder="Rechercher un user" class="form-control sea" />
+    <div class="mb-3">
+        <label for="user-search-input" class="form-label">Rechercher un utilisateur</label>
+        <div class="input-group">
+            <input type="search" 
+                   id="user-search-input" 
+                   placeholder="Entrez un nom, prénom ou email..." 
+                   class="form-control sea" {# Gardé votre classe 'sea' si elle a un usage spécifique #}
+                   aria-label="Champ de recherche d'utilisateur" 
+                   aria-describedby="button-search-addon"
+                   {# Note: Ce champ déclenche généralement une recherche JS pour peupler le select ci-dessous #}
+                   {# Vous n'avez peut-être pas besoin d'un attribut 'name' ici si la recherche est purement JS #}
+                   {# name="query_search" #} 
+                   />
+            <button class="btn btn-outline-secondary" type="button" id="button-search-addon">
+                {# Icône de recherche Bootstrap Icons #}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+            </button>
+        </div>
+        <div id="user-search-help" class="form-text">Tapez pour rechercher, les résultats apparaîtront ci-dessous.</div>
+    </div>
 
+    {# Champ Select pour choisir l'utilisateur trouvé #}
+    <div class="mb-3">
+        <label for="recois_id_pilote" class="form-label">Utilisateur trouvé</label>
+        <select id="recois_id_pilote" 
+                name="fields[gensinscrit][]" 
+                class="form-select" 
+                required 
+                aria-label="Sélectionnez l'utilisateur à inviter"
+                {# Ce select sera probablement peuplé par JavaScript suite à la recherche #}
+                >
+            <option value="" disabled selected>-- Sélectionnez dans les résultats --</option>
+            {# Exemple d'option ajoutée par JS: <option value="123">Jean Dupont</option> #}
+        </select>
+        {# Vous pouvez ajouter un message d'erreur ici en cas de besoin #}
+        {# <div class="invalid-feedback">Veuillez sélectionner un utilisateur.</div> #}
+    </div>
 
-    {# Champs du deuxième formulaire #}
-    {# {{ hiddenInput('entryId', pilote.id) }} #}
-    {# <input type="hidden" name="title" value="{{ pilote.title ?? null }}"> #}
-    {# <input type="hidden" name="fields[gens][]" value="{{ user.id }}"> #}
-    {# <input type="hidden" id="recois_id_pilote" name="fields[pilotes][]"> #}
-    <select id="recois_id_pilote" name="fields[gensinscrit][]" required>
-    </select>
+    {# Bouton de soumission #}
+    <button type="submit" class="btn btn-secondary d-inline-flex align-items-center">
+        {# Icône d'invitation Bootstrap Icons #}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus-fill me-2" viewBox="0 0 16 16">
+          <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+          <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        Inviter cet utilisateur
+    </button>
 
-
-    {# <input type="hidden" name="slug" value="{{ voiture.title ?? null }}"> #}
-    {# {{ hiddenInput('entryId', user.id) }} #}
-    {# <input type="hidden" name="fields[pilotes][]" value="{{ pilote.id ?? null }}"> #}
-    {# <input type="hidden" name="fields[gens][0][pilotes][]" value="{{ pilote.id ?? null }}"> #}
-    <input type="submit" value="Inviter un user dans l'agenda">
-</form>     
-
+</form> 
 
 <script>
         document.addEventListener('DOMContentLoaded', function() {

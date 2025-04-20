@@ -1,76 +1,123 @@
-{# Si l'utilisateur est connecté, récupérer ses informations #}
-{% set emailDepuisCookie = craft.app.session.get('loggedInGensId') %}
+{# Présumé être inclus dans un layout qui contient déjà les liens CSS/JS Bootstrap #}
+{# {% extends "_layout.twig" %} #}
 
-{# Vérifier si l'utilisateur est connecté #}
-{% if emailDepuisCookie is not null %}
-    {# L'utilisateur est connecté, vous pouvez afficher ses informations #}
-    {% set entry = craft.entries().id(emailDepuisCookie).one() %}
-{% else %}
-    {# L'utilisateur n'est pas connecté, afficher un message ou rediriger #}
-    <p><strong>Aucun utilisateur connecté.</strong></p>
-{% endif %}
+{% block content %}
 
-{# Récupérer l'entrée associée à l'utilisateur #}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        {# Limiter la largeur du contenu (surtout pour le formulaire) #}
+        <div class="col-md-8 col-lg-6 col-xl-5">
 
+            {# -- Vérification de l'état de connexion -- #}
+            {% set emailDepuisCookie = craft.app.session.get('loggedInGensId') %}
+            {% set entry = null %} {# Initialiser à null #}
+            {% if emailDepuisCookie is not null %}
+                {% set entry = craft.entries().id(emailDepuisCookie).one() %}
+            {% endif %}
 
-{% if entry %}
-    <p><strong>Connecté en tant que : {{ entry }}</strong></p>
-    {# Formulaire de déconnexion #}
-    <form method="post" action="{{ actionUrl('/monplugingens/auth/logout') }}">
-        {{ csrfInput() }}
-        <button name="deconnection" type="submit">Déconnexion</button>
-    </form>
-{% else %}
-    <p><strong>Veuillez vous connecter.</strong></p>
-    {# Formulaire de connexion #}
-    <form id="connect" method="post" action="{{ actionUrl('/monplugingens/auth/login') }}">
-        {# {{ actionInput('guest-entries/save') }} #}
-        {# {{ hiddenInput('sectionId', 3) }} ID de la section où sauvegarder #}
-        {# <input type="hidden" name="action" value="monplugingens/AuthController/actionLogin"> #}
-        {# <input type="hidden" name="action" value="actions/monplugingens/AuthController/actionTest"> #}
-        {# {{ actionInput('/actions/monplugingens/AuthController/actionTest') }} #}
-        {{ csrfInput() }} {# Important pour la sécurité CSRF #}
+            {# -- Affichage conditionnel : Connecté ou Formulaire de Connexion -- #}
+            {% if entry %}
+                {# -- Section Utilisateur Connecté -- #}
+                <div class="card shadow-sm text-center">
+                    <div class="card-header">
+                        Statut de Connexion
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Connecté</h5>
+                        {# <p class="card-text fs-4 mb-4">{{ entry.title ?? 'Utilisateur Inconnu' }}</p>
+                        
+                        {# Formulaire de déconnexion stylisé #}
+                        <form method="post" action="{{ actionUrl('/monplugingens/auth/logout') }}">
+                            {{ csrfInput() }}
+                            <button name="deconnection" type="submit" class="btn btn-outline-danger btn-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right me-1" viewBox="0 0 16 16">
+                                  <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                                  <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                                </svg>
+                                Déconnexion
+                            </button>
+                        </form>
+                    </div>
+                </div>
 
-        <div>
-            <label for="email">Email :</label>
-            <input type="email" id="email" name="mail" required>
-        </div>
-        <div>
-            {# Changer le type en password pour masquer la saisie #}
-            <label for="nom">Mot de passe :</label>
-            <input type="password" id="nom" name="pass" required>
-        </div>
-        <button type="submit">Envoyer</button>
-    </form>
+            {% else %}
+                {# -- Section Formulaire de Connexion -- #}
+                <div class="card shadow-sm">
+                     <div class="card-header text-center">
+                        <h3>Connexion</h3>
+                    </div>
+                    <div class="card-body p-4">
 
-    {% if errors is defined and errors.password is defined %}
-        <ul class="errors">
-            {% for error in errors.password %}
-                <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    {# {% include "users.twig" %} #} {# Si le formulaire est dans un autre fichier #}
-{% endif %}
+                        {# Affichage des messages d'erreur généraux ou flash AVANT le formulaire #}
+                        {% set generalErrors = (errors is defined and errors.general is defined) ? errors.general : [] %}
+                        {% set flashError = craft.app.session.getFlash('error') %}
+                        
+                        {% if generalErrors is not empty or flashError %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                             <ul class="list-unstyled mb-0">
+                                {% if flashError %}
+                                     <li>{{ flashError }}</li>
+                                {% endif %}
+                                {% for error in generalErrors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                             </ul>
+                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                         </div>
+                         {% endif %}
 
+                        {# Formulaire de connexion stylisé #}
+                        <form id="connect" method="post" action="{{ actionUrl('/monplugingens/auth/login') }}">
+                            {{ csrfInput() }}
 
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Adresse Email :</label>
+                                <input type="email" id="email" name="mail" class="form-control {% if errors is defined and (errors.general is defined or errors.email is defined) %}is-invalid{% endif %}" required placeholder="nom@exemple.com">
+                                {# Affichage d'erreur spécifique au champ email si disponible #}
+                                {% if errors is defined and errors.email is defined %}
+                                    <div class="invalid-feedback">
+                                        {{ errors.email | join(', ') }}
+                                    </div>
+                                {% endif %}
+                            </div>
 
+                            <div class="mb-3">
+                                <label for="password-field" class="form-label">Mot de passe :</label> {# ID changé pour éviter conflit si 'nom' est utilisé ailleurs #}
+                                <input type="password" id="password-field" name="pass" class="form-control {% if errors is defined and (errors.general is defined or errors.password is defined) %}is-invalid{% endif %}" required placeholder="Votre mot de passe">
+                                {# Affichage d'erreur spécifique au mot de passe #}
+                                {% if errors is defined and errors.password is defined %}
+                                    <div class="invalid-feedback">
+                                         {{ errors.password | join(', ') }}
+                                    </div>
+                                {% endif %}
+                            </div>
 
+                            <div class="d-grid"> {# Pour un bouton pleine largeur #}
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-right me-1" viewBox="0 0 16 16">
+                                      <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
+                                      <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                                    </svg>
+                                    Se Connecter
+                                </button>
+                            </div>
+                            
+                            {# Optionnel: Lien "Mot de passe oublié ?" #}
+                            {# <div class="text-center mt-3">
+                                <a href="/forgot-password" class="text-decoration-none"><small>Mot de passe oublié ?</small></a>
+                            </div> #}
 
+                        </form> {# Fin Formulaire Connexion #}
+                    </div> {# Fin Card Body #}
+                </div> {# Fin Card #}
 
-{# Afficher les erreurs générales (ex: identifiants incorrects) #}
-{% if errors is defined and errors.general is defined %}
-    <ul class="errors">
-        {% for error in errors.general %}
-            <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
-{# Afficher un message d'erreur global si disponible (ex: via flash messages) #}
-{% if craft.app.session.hasFlash('error') %}
-    <p class="error">{{ craft.app.session.getFlash('error') }}</p>
-{% endif %}
+            {% endif %} {# Fin if entry #}
 
+        </div> {# Fin Col #}
+    </div> {# Fin Row #}
+</div> {# Fin Container #}
+
+{% endblock %}
 
 
 
