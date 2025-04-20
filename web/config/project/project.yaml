@@ -1,4 +1,4 @@
-dateModified: 1745110372
+dateModified: 1745120477
 email:
   fromEmail: aluligu@gmail.com
   fromName: a
@@ -279,6 +279,25 @@ plugins:
                 -
                   - sectionUid
                   - 6f5631e2-4590-4486-a207-c8f6d670e07e # Tag
+                -
+                  - allowGuestSubmissions
+                  - '1'
+                -
+                  - enabledByDefault
+                  - '1'
+                -
+                  - runValidation
+                  - '1'
+                -
+                  - authorUid
+                  - f2ddd9c2-0d1b-4341-9c50-69fa57b2a633
+          -
+            - 778b148a-6bcf-4d14-998f-6db6d6dc01fc # Groupe
+            -
+              __assoc__:
+                -
+                  - sectionUid
+                  - 778b148a-6bcf-4d14-998f-6db6d6dc01fc # Groupe
                 -
                   - allowGuestSubmissions
                   - '1'

@@ -27,7 +27,7 @@ siteSettings:
     uriFormat: 'gens/{slug}'
   a7c10eaa-616c-4edf-8aa6-2ddc2e17d921: # agendafriends
     enabledByDefault: true
-    hasUrls: false
-    template: null
-    uriFormat: null
+    hasUrls: true
+    template: gens/_entry.twig
+    uriFormat: 'gens/{slug}'
 type: channel

@@ -1,13 +1,9 @@
 isPublic: true
 name: 'Public Schema'
 scope:
-  - 'sites.03e942c5-fa2f-4d2a-b7e5-52766f07b3b2:read' # a
+  - 'sites.a7c10eaa-616c-4edf-8aa6-2ddc2e17d921:read' # agendafriends
   - 'elements.drafts:read'
   - 'elements.revisions:read'
   - 'elements.inactive:read'
-  - 'sections.879ed238-6c41-49ca-bb35-e156a0f6b56a:read' # voitures
   - 'sections.9434ca7d-d978-4b3e-b98c-e00e8c4aedaf:read' # gens
-  - 'sections.3e570fea-12ba-4b44-beb1-5fffeed5f4c5:read' # pilogens
-  - 'sections.ff892292-fe95-4c7a-aa41-5c4ae2dc96fd:read' # pilotes
-  - 'sections.029794bd-8c92-407b-be2c-2a35cb09533b:read' # piloture
   - 'volumes.0d874f90-596b-4955-b5f0-c6c493421528:read' # imgsvol

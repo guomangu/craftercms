@@ -61,11 +61,19 @@
         <div class="alert alert-info">Aucun moment trouvé.</div>
     {% else %}
 
-    <h2 class="mb-3">Agenda: {{ groupe.title }}</h2>
+    
 
 
     <div class="container mt-4">
-      <div class="row row-cols-1"> {# Ajustez les colonnes selon vos préférences #}
+    <h2 class="mb-3">Agenda: {{ groupe.title }}</h2>
+    <div class="event-details mt-2">
+        {% include "p.twig" with {
+            groupe: groupe,
+        } %}
+    </div>
+    
+    <hr>
+    <div class="row row-cols-1"> {# Ajustez les colonnes selon vos préférences #}
         {% set currentDate = date_variable %}
         {% for i in 1..31 %} {# Attention: Ceci affiche toujours 31 jours. Idéalement, adaptez à la longueur du mois réel #}
 
