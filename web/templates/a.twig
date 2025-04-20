@@ -10,9 +10,9 @@
         .limit(10)
         .all() %}
 
-    <div class="related-actions mb-3"> {# Marge inférieure réduite #}
+    <div class="related-actions"> {# Marge inférieure réduite #}
         {# Utilisation d'un titre plus petit, adapté à l'inclusion dans une carte #}
-        <h6 class="mb-2">Actions Associées :</h6>
+        {# <h6 class="mb-2">Actions Associées :</h6> #}
 
         {% if latestaction|length %}
             {# Utilisation d'un List Group pour un affichage compact #}
@@ -92,12 +92,19 @@
     </div>
 
     {# Séparateur optionnel, peut être utile visuellement #}
-    <hr class="my-3">
+    {# <hr class="my-3"> #}
 
     {# --- Section Formulaire d'Ajout --- #}
     {# Pas de marge externe (m-*) car géré par le parent ou les mb-*/mt-* internes #}
     {# Ajout d'un ID unique au formulaire si plusieurs instances sont possibles sur la page #}
-    <form method="post" id="action-form-{{ mom.id }}" class="add-action-form" accept-charset="UTF-8" enctype="multipart/form-data">
+    <button class="btn" style="display: flex; place-self: center;" type="button" data-bs-toggle="collapse" data-bs-target="#action-form-{{ mom.id }}-{{ td }}" aria-expanded="false" aria-controls="action-form-{{ mom.id }}-{{ td }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+        </svg>
+    </button>
+
+    <form method="post" id="action-form-{{ mom.id }}-{{ td }}" class="add-action-form collapse" accept-charset="UTF-8" enctype="multipart/form-data">
         {{ csrfInput() }}
         {{ actionInput('entries/save-entry') }}
         {{ hiddenInput('sectionId', 7) }} {# Assurez-vous que 7 est le bon ID de section #}
@@ -132,6 +139,5 @@
         {# Bouton plus petit (btn-sm) et pleine largeur (w-100) pour un accès facile sur mobile #}
         <button type="submit" class="btn btn-dark btn-sm w-100 mt-2">Ajouter</button>
     </form>
-
 {% endblock %}
 {# --- Fin du template a.twig --- #}

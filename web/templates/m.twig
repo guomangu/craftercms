@@ -88,16 +88,17 @@
                             {# 3. Loop through the PRE-FILTERED events for this day #}
                             {% for mom in eventsForThisDay %}
                                 {# Affiche les détails de l'événement #}
-                                <div class="mb-3 pb-3 border-bottom"> {# Sépare les événements s'il y en a plusieurs le même jour #}
+                                <div class="">
                                     <p class="card-text mb-1">
-                                        <strong>Heure :</strong> {{ mom.t }}
+                                        <strong>Heure :</strong> {{ mom.t }}h
                                     </p>
 
                                     {# Inclut votre template 'a.twig' pour les détails supplémentaires #}
                                     <div class="event-details mt-2">
                                         {% include "a.twig" with {
                                             mom: mom,
-                                            user: user
+                                            user: user,
+                                            td: currentDate|date('d')
                                         } %}
                                     </div>
                                 </div>
