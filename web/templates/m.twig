@@ -23,7 +23,7 @@
 
 {% block content %}
     <h2 class="mb-3">La Routine</h2>
-    <p>Voici les derniers moments que vous avez ajoutés a votre Routine:</p>
+    {# <p>Voici les derniers moments que vous avez ajoutés a votre Routine:</p> #}
     
     {% set groupe = craft.entries().id(number).one() %}
     {% set ids_inscrits = groupe.gensinscrit|map(inscrit => inscrit.id) %}
@@ -51,7 +51,11 @@
 
     {# Assurez-vous que Bootstrap CSS est inclus dans votre page principale #}
     {# Exemple: <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> #}
+<p style="justify-self: center; margin:0">{{ date_variable|date('l d/m/Y') }}</p>
+<p style="justify-self: center;"><strong>{{ date_variable|date('H:i') }}</strong></p>
 
+
+    {# Si des moments sont trouvés, affichez-les #}
 
     {% if latestmom|length == 0 %}
         <div class="alert alert-info">Aucun moment trouvé.</div>
@@ -62,7 +66,6 @@
 
     <div class="container mt-4">
       <div class="row row-cols-1"> {# Ajustez les colonnes selon vos préférences #}
-
         {% set currentDate = date_variable %}
         {% for i in 1..31 %} {# Attention: Ceci affiche toujours 31 jours. Idéalement, adaptez à la longueur du mois réel #}
 
@@ -130,13 +133,15 @@
         {# {{ actionInput('guest-entries/save') }} #}
         {{ hiddenInput('sectionId', 6) }} {# ID de la section où sauvegarder #}
         {{ hiddenInput('enabled', '1') }}
+        <input type="hidden" name="fields[groupe][]" class="form-control" required value="{{ groupe.id }}">
+
+        
 
         <div class="mb-3">
             <label for="title" class="form-label">Moment:</label>
-            <input id="title" type="text" name="title" class="form-control" required>
+            <input id="title" type="hidden" name="title" class="form-control" value="{{groupe}}-{{user}}" required>
         </div>
 
-        <hr> {# Séparateur visuel #}
 
         <div class="mb-3">
             <label class="form-label">heure</label>
@@ -187,7 +192,7 @@
             </select>
         </div>
 
-        <button type="submit" class="btn btn-primary">Ajouter la voiture</button>
+        <button type="submit" class="btn btn-primary">Ajouter un Moment</button>
     </form>
 
 

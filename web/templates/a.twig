@@ -27,7 +27,7 @@
                 {% for action in latestaction %}
                     {% set image = action.img.one() %}
                     {# Essayez de récupérer une URL pour l'action, adaptez 'action.url' à votre structure de données #}
-                    {% set actionUrl = "b/" ~ action.id ?? null %} 
+                    {% set actionUrl = "/b/" ~ action.id ?? null %} 
                     {% set Tag = actionUrl ? 'a' : 'div' %} {# La carte sera un lien 'a' si actionUrl existe, sinon une 'div' #}
 
                     {# Carte Bootstrap horizontale #}
