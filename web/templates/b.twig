@@ -61,8 +61,6 @@
 
 
 
-
-
                         {# --- Configuration et accès simplifié --- #}
 {% set moment = latestaction.moment[0] ?? null %} {# Accès sécurisé à l'objet moment #}
 
@@ -147,6 +145,13 @@
                         <p class="card-text mb-1">
                             <small class="text-muted">jour : </small><strong>{{ nextOccurrenceDate|date("l d F") }}</strong>
                         </p>
+
+                        <hr>
+
+                        {% include "i.twig" with {
+                            act: latestaction,
+                            dt: nextOccurrenceDate
+                        } %}
                     </div>
                 </div>
             </div>

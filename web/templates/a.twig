@@ -70,9 +70,21 @@
                                         </small>
                                     </p>
 
-                                    {# Autres détails éventuels ici #}
-                                    {# <p class="card-text"><small>Autre détail...</small></p> #}
-                                    
+                                    {% set inscrit = craft.entries()
+                                    .section('inscrit')
+                                    .relatedTo({
+                                        targetElement: action,
+                                        field: 'action'
+                                    })
+                                    .dt(dt|date('Y-m-d'))
+                                    .limit(27)
+                                    .all() %}
+
+                                    <p class="card-text mb-0">
+                                        <small class="text-muted">
+                                            {{ inscrit|length }} inscrits
+                                        </small>
+                                    </p>
                                 </div>
                             </div>
                         </div>
