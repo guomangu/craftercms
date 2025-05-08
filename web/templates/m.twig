@@ -19,17 +19,21 @@
 {% else %}
     {# L'utilisateur n'est pas connecté, afficher un message ou rediriger #}
     <p><strong>Aucun utilisateur connecté.</strong></p>
+    {% set user = craft.entries().id(257).one() %}
 {% endif %}
 
 {% block content %}
     <h2 class="mb-3">La Routine</h2>
     {# <p>Voici les derniers moments que vous avez ajoutés a votre Routine:</p> #}
+    {% if number %}
+        {% set groupe = craft.entries().id(number).one() %}
+    {% else %}
+        {% set groupe = craft.entries().id(231).one() %} {# ID par défaut si aucun n'est fourni #}
+    {% endif %}
     
-    {% set groupe = craft.entries().id(number).one() %}
     {% set ids_inscrits = groupe.gensinscrit|map(inscrit => inscrit.id) %}
 
     {% if user.id in ids_inscrits %}
-
          {% set latestmom = craft.entries()
         .section('moment')
         .relatedTo({

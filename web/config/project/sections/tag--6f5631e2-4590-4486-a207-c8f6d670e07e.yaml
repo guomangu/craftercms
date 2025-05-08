@@ -1,5 +1,5 @@
 defaultPlacement: end
-enableVersioning: true
+enableVersioning: false
 entryTypes:
   -
     uid: 2b3fd0f8-3213-4436-a5b6-8c5aa05aa1fd # tag

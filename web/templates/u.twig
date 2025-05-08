@@ -13,7 +13,14 @@
             {% set entry = null %} {# Initialiser à null #}
             {% if emailDepuisCookie is not null %}
                 {% set entry = craft.entries().id(emailDepuisCookie).one() %}
+            {% else %}
+                {% set entry = craft.entries().id(257).one() %}
+                {# {% set entry = craft.entries().section("gens").mail("a@gmail.com").one() %} #}
             {% endif %}
+
+    {# <pre>
+        {{ dump(entry) }}
+    </pre> #}
 
             {# -- Affichage conditionnel : Connecté ou Formulaire de Connexion -- #}
             {% if entry %}
@@ -117,9 +124,22 @@
     </div> {# Fin Row #}
 </div> {# Fin Container #}
 
-{% endblock %}
 
 
 
 
+{% if entry is not defined %}
 {% include "g.twig" %}
+{% endif %}
+
+{# 
+<pre>
+    {{ dump(entry) }}
+</pre> #}
+
+
+{% include "s.twig" with {
+    user:entry
+} %}
+
+{% endblock %}
