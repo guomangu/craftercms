@@ -824,6 +824,9 @@ class Raster extends Image
         switch ($extension) {
             case 'jpeg':
             case 'jpg':
+                // ensure quality is between -1 and 100
+                // https://github.com/craftcms/cms/issues/16977
+                $quality = min(100, max(-1, $quality));
                 return ['jpeg_quality' => $quality, 'flatten' => true];
 
             case 'gif':

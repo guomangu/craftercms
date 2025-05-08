@@ -207,6 +207,12 @@ class Matrix extends Field implements
     public ?int $maxEntries = null;
 
     /**
+     * @var bool Enable versioning
+     * @since 5.7.0
+     */
+    public bool $enableVersioning = false;
+
+    /**
      * @var string The view mode
      * @phpstan-var self::VIEW_MODE_*
      * @since 5.0.0
@@ -764,6 +770,31 @@ class Matrix extends Field implements
     /**
      * @inheritdoc
      */
+    public function serializeValueForDb(mixed $value, ElementInterface $element): mixed
+    {
+        /** @var EntryQuery|ElementCollection $value */
+        $serialized = [];
+        $new = 0;
+
+        foreach ($value->all() as $entry) {
+            /** @var Entry $entry */
+            $entryId = $entry->id ?? sprintf('new%s', ++$new);
+            $serialized[$entryId] = [
+                'title' => $entry->title,
+                'slug' => $entry->slug,
+                'type' => $entry->getType()->handle,
+                'enabled' => $entry->enabled,
+                'collapsed' => $entry->collapsed,
+                'fields' => $entry->getSerializedFieldValuesForDb(),
+            ];
+        }
+
+        return $serialized;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function copyValue(ElementInterface $from, ElementInterface $to): void
     {
         // We'll do it later from afterElementPropagate()
@@ -788,6 +819,79 @@ class Matrix extends Field implements
     /**
      * @inheritdoc
      */
+    protected function actionMenuItems(): array
+    {
+        $items = [];
+
+        // Copy all
+        if ($this->maxEntries !== 1 && $this->viewMode !== self::VIEW_MODE_INDEX) {
+            $view = Craft::$app->getView();
+            $copyAllId = sprintf('action-copy-all-%s', mt_rand());
+            $items[] = [
+                'id' => $copyAllId,
+                'icon' => 'clone-dashed',
+                'color' => \craft\enums\Color::Fuchsia,
+                'label' => StringHelper::upperCaseFirst(Craft::t('app', 'Copy all {type}', [
+                    'type' => Entry::pluralLowerDisplayName(),
+                ])),
+            ];
+
+            if ($this->viewMode === self::VIEW_MODE_CARDS) {
+                $view->registerJsWithVars(fn($copyAllId, $fieldId) => <<<JS
+(() => {
+  $('#' + $copyAllId).on('activate', () => {
+    Craft.cp.copyElements($('#' + $fieldId + ' > .nested-element-cards > .elements > li > .element'));
+  });
+})();
+JS, [
+                    $view->namespaceInputId($copyAllId),
+                    $view->namespaceInputId($this->getInputId()),
+                ]);
+            } else {
+                $view->registerJsWithVars(fn($copyAllId, $fieldId, $baseInfo) => <<<JS
+(() => {
+  $('#' + $copyAllId).on('activate', () => {
+    const elementInfo = [];
+    $('#' + $fieldId + ' > .blocks > .matrixblock').each((i, element) => {
+      element = $(element);
+      elementInfo.push(Object.assign({
+          id: element.data('id'),
+          draftId: element.data('draftId'),
+          revisionId: element.data('revisionId'),
+          ownerId: element.data('ownerId'),
+          siteId: element.data('siteId'),
+        }, $baseInfo));
+    });
+    Craft.cp.copyElements(elementInfo);
+  });
+})();
+JS, [
+                    $view->namespaceInputId($copyAllId),
+                    $view->namespaceInputId($this->getInputId()),
+                    [
+                        'type' => Entry::class,
+                        'fieldId' => $this->id,
+                    ],
+                ]);
+            }
+        }
+
+        $parentItems = parent::actionMenuItems();
+
+        if (!empty($items) && !empty($parentItems)) {
+            return [
+                ...$items,
+                ['type' => 'hr'],
+                ...$parentItems,
+            ];
+        }
+
+        return [...$items, ...$parentItems];
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getTranslationDescription(?ElementInterface $element): ?string
     {
         return $this->entryManager()->getTranslationDescription($element);
@@ -801,7 +905,9 @@ class Matrix extends Field implements
     {
         return match ($this->viewMode) {
             self::VIEW_MODE_BLOCKS => $this->blockInputHtml($value, $element),
-            default => $this->nestedElementManagerHtml($element),
+            default => Html::tag('div', $this->nestedElementManagerHtml($element), [
+                'id' => $this->getInputId(),
+            ]),
         };
     }
 
@@ -822,13 +928,10 @@ class Matrix extends Field implements
         if ($value instanceof EntryQuery) {
             $value = $value->getCachedResult() ?? (clone $value)
                 ->drafts(null)
+                ->canonicalsOnly()
                 ->status(null)
                 ->limit(null)
-                ->andWhere([
-                    'or',
-                    ['elements.draftId' => null],
-                    ['elements.canonicalId' => null],
-                ])
+                ->eagerly()
                 ->all();
         }
 
@@ -929,15 +1032,26 @@ JS;
         ];
 
         if (!$static) {
+            $entryTypeIdsJs = Json::encode(array_map(fn(EntryType $entryType) => $entryType->id, $entryTypes));
             $config += [
                 'sortable' => true,
                 'canCreate' => true,
+                'canPaste' => <<<JS
+(elementInfo) => {
+  const entryTypeIds = $entryTypeIdsJs;
+  for (const info of elementInfo) {
+    if (!entryTypeIds.includes(info.data.entryTypeId)) {
+      return false;
+    }
+  }
+  return true;
+}
+JS,
                 'createAttributes' => array_map(fn(EntryType $entryType) => [
                     'icon' => $entryType->icon,
                     'color' => $entryType->color,
                     'label' => Craft::t('site', $entryType->name),
                     'attributes' => [
-                        'fieldId' => $this->id,
                         'typeId' => $entryType->id,
                     ],
                 ], $entryTypes),
@@ -1449,7 +1563,6 @@ JS;
                 ->ownerId($element->id)
                 ->siteId($element->siteId)
                 ->drafts(null)
-                ->revisions(null)
                 ->status(null)
                 ->indexBy($uids ? 'uid' : 'id')
                 ->all();

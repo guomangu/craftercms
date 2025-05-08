@@ -1,0 +1,120 @@
+{% set dateLimite = dt %}
+{% set dateLimite2 = dt|date('Y-m-d') %}
+
+
+{% set latestactivites = craft.entries()
+.section('activite')
+.relatedTo({
+    targetElement: action,
+    field: 'action'
+})
+.where(['>=', 'd', dateLimite2])
+.orderBy('d asc')
+.limit(9)
+.all() %}
+
+{% set moment = action.moment[0] %}
+
+{% set d = moment.d %}
+{# l est un N #}
+{% set l = moment.l %} 
+
+
+
+
+{% if l %}
+    <h3>Activite du club {{ action.title }} du {{ dateLimite|date("l") }}</h3>
+    {% for ii in 0..5 %}
+        <hr>
+        <p class="btn">{{ dateLimite|date("l d F") }}</p>
+        {% set activ = latestactivites|filter(activite => activite.d == dateLimite|date('Y-m-d')) %}
+        {% for ac in activ %}
+            
+
+            {% set t = ac.t %}
+            {% set date_incomplete = ac.d %}
+            {% set heure_souhaitee = t ~":00:00" %}
+            {% set date_avec_heure_chaine = date_incomplete ~ " " ~ heure_souhaitee %}
+            {% set datetimeuuu = date(date_avec_heure_chaine) %}
+
+
+
+            <a class="btn btn-outline-secondary" href="/n/{{ ac.id }}">
+            {{ ac.title }}
+            {{ ac.zone }}
+            - {{ datetimeuuu|date("H:i") }}h
+            </a>
+            {% include "x.twig" with {
+                activ: ac,
+            } %}
+            
+        {% endfor %}
+
+       
+       {% include "r.twig" with {
+            action: action,
+            dd: dateLimite,
+            t:t
+        } %}
+        
+
+        {% set dateLimite = dateLimite|date_modify("+1 week") %}
+    {% endfor %}
+{% else %}        
+     <h3>Activite du club {{ action.title }} du {{ dateLimite|date("d") }}</h3>
+    {% for ii in 0..3 %}
+        {{ dateLimite|date("l d F") }}
+        {% set activ = latestactivites|filter(activite => activite.d == dateLimite|date('Y-m-d')) %}
+        {% for ac in activ %}
+            <a class="btn btn-outline-secondary" href="/n/{{ ac.id }}">
+            {{ ac.title }}
+            {{ ac.zone }}
+            </a>
+
+
+            {% set t = ac.t %}
+            {% set date_incomplete = ac.d %}
+            {% set heure_souhaitee = t ~":00:00" %}
+            {% set date_avec_heure_chaine = date_incomplete ~ " " ~ heure_souhaitee %}
+            {% set datetimeuuu = date(date_avec_heure_chaine) %}
+
+            {{ datetimeuuu|date("H:i") }}h
+        {% endfor %}
+
+        {% include "r.twig" with {
+            action: action,
+            dd: dateLimite,
+            t: t
+        } %}
+
+        {% set dateLimite = dateLimite|date_modify("+1 month") %}
+    {% endfor %}
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+{# 
+
+{% for activ in latestactivites %}
+    {{activ.title}}
+    {{activ.zone}}
+
+    {% set d = activ.d %}
+    {% set t = activ.t %}
+
+    {% set date_incomplete = d %}
+    {% set heure_souhaitee = t ~":00:00" %}
+
+    {% set date_avec_heure_chaine = date_incomplete ~ " " ~ heure_souhaitee %}
+    {% set datetimeuuu = date(date_avec_heure_chaine) %}
+
+    {{ datetimeuuu|date("l d F") }}
+    a {{ datetimeuuu|date("H:i") }}h
+{% endfor %} #}

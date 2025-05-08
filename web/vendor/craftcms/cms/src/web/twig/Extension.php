@@ -123,6 +123,7 @@ class Extension extends AbstractExtension implements GlobalsInterface
                 'exec',
                 'file_get_contents',
                 'file_put_contents',
+                'popen',
             ])
         ) {
             throw new RuntimeError(sprintf('The "%s" %s does not support passing "%s".', $thing, $type, $arrow));
@@ -931,6 +932,10 @@ class Extension extends AbstractExtension implements GlobalsInterface
      */
     public function replaceFilter(mixed $str, mixed $search, mixed $replace = null, ?bool $regex = null): mixed
     {
+        if ($str === null) {
+            return '';
+        }
+
         if ($search instanceof Traversable) {
             $search = iterator_to_array($search);
         }

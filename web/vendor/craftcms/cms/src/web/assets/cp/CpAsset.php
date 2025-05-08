@@ -26,6 +26,7 @@ use craft\services\Sites;
 use craft\utilities\QueueManager;
 use craft\validators\UserPasswordValidator;
 use craft\web\AssetBundle;
+use craft\web\assets\animationblocker\AnimationBlockerAsset;
 use craft\web\assets\axios\AxiosAsset;
 use craft\web\assets\d3\D3Asset;
 use craft\web\assets\datepickeri18n\DatepickerI18nAsset;
@@ -60,6 +61,7 @@ class CpAsset extends AssetBundle
      */
     public $depends = [
         TailwindResetAsset::class,
+        AnimationBlockerAsset::class,
         AxiosAsset::class,
         D3Asset::class,
         GarnishAsset::class,
@@ -134,9 +136,12 @@ JS;
             'Are you sure you want to delete this {type}?',
             'Are you sure you want to delete “{name}”?',
             'Are you sure you want to discard your changes?',
+            'Are you sure you want to move the selected items?',
             'Are you sure you want to transfer your license to this domain?',
+            'Are you sure you want to undo the move?',
             'Ascending',
             'Assets',
+            'Attributes',
             'Breadcrumbs',
             'Buy {name}',
             'Cancel',
@@ -148,6 +153,7 @@ JS;
             'Choose which sites this source should be visible for.',
             'Choose which table columns should be visible for this source by default.',
             'Choose which user groups should have access to this source.',
+            'Choose',
             'Clear search',
             'Clear',
             'Close Preview',
@@ -169,6 +175,7 @@ JS;
             'Couldn’t save new order.',
             'Create {type}',
             'Create',
+            'Custom',
             'Customize sources',
             'Default Sort',
             'Default Table Columns',
@@ -194,6 +201,7 @@ JS;
             'Don’t show in element cards',
             'Don’t use for element thumbnails',
             'Draft Name',
+            'Duplicate',
             'Edit draft settings',
             'Edit {type}',
             'Edit',
@@ -260,6 +268,7 @@ JS;
             'Move down',
             'Move folder',
             'Move forward',
+            'Move reverted.',
             'Move to the left',
             'Move to the right',
             'Move to',
@@ -286,12 +295,14 @@ JS;
             'No limit',
             'Notes',
             'Notice',
+            'Number of columns',
             'OK',
             'Open in a new tab',
             'Options',
             'Password',
             'Past year',
             'Past {num} days',
+            'Paste {type}',
             'Pay {price}',
             'Pending',
             'Phone',
@@ -346,7 +357,8 @@ JS;
             'Showing {total, number} {total, plural, =1{{item}} other{{items}}}',
             'Sign out now',
             'Sites',
-            'Skip to {title}',
+            'Skip to card view designer',
+            'Skip to top of preview',
             'Sort ascending',
             'Sort attribute',
             'Sort by',
@@ -377,7 +389,6 @@ JS;
             'To {date}',
             'To',
             'Today',
-            'Top of preview',
             'Transfer it to:',
             'Try again',
             'Try another way',
@@ -410,6 +421,7 @@ JS;
             'days',
             'draft',
             'element',
+            'elements',
             'files',
             'folders',
             'hour',
@@ -435,8 +447,10 @@ JS;
             '{pct} width',
             '{total, number} {total, plural, =1{error} other{errors}} found in {num, number} {num, plural, =1{tab} other{tabs}}.',
             '{total, number} {total, plural, =1{{item}} other{{items}}}',
+            '{total, number} {type} copied.',
             '{totalItems, plural, =1{Item} other{Items}} moved.',
             '{type} Criteria',
+            '{type} copied.',
             '{type} saved.',
             '“{name}” deleted.',
         ]);
@@ -444,6 +458,31 @@ JS;
         $view->registerTranslations('yii', [
             '{attribute} should contain at least {min, number} {min, plural, one{character} other{characters}}.',
             '{attribute} should contain at most {max, number} {max, plural, one{character} other{characters}}.',
+        ]);
+
+        $view->registerIcons([
+            'arrow-down',
+            'arrow-left',
+            'arrow-right',
+            'arrow-up',
+            'arrows-rotate',
+            'asterisk',
+            'asterisk-slash',
+            'clipboard',
+            'clone',
+            'clone-dashed',
+            'duplicate',
+            'edit',
+            'gear',
+            'image',
+            'image-slash',
+            'move',
+            'pencil',
+            'plus',
+            'remove',
+            'share',
+            'trash',
+            'xmark',
         ]);
     }
 
@@ -534,7 +573,11 @@ JS;
             'canAccessQueueManager' => Craft::$app->getUtilities()->checkAuthorization(QueueManager::class),
             'dataAttributes' => Html::$dataAttributes,
             'defaultIndexCriteria' => [],
-            'disableAutofocus' => (bool)($currentUser->getPreference('disableAutofocus') ?? false),
+            'disableAutofocus' => (bool)(
+                $currentUser->getPreference('disableAutofocus')
+                ?? $generalConfig->accessibilityDefaults['disableAutofocus']
+                ?? false
+            ),
             'editableCategoryGroups' => $upToDate ? $this->_editableCategoryGroups() : [],
             'edition' => Craft::$app->edition->value,
             'elementTypeNames' => $elementTypeNames,
@@ -546,7 +589,11 @@ JS;
             'isMultiSite' => Craft::$app->getIsMultiSite(),
             'limitAutoSlugsToAscii' => $generalConfig->limitAutoSlugsToAscii,
             'maxUploadSize' => Assets::getMaxUploadSize(),
-            'notificationDuration' => (int)($currentUser->getPreference('notificationDuration') ?? 5000),
+            'notificationDuration' => (int)(
+                $currentUser->getPreference('notificationDuration')
+                ?? $generalConfig->accessibilityDefaults['notificationDuration']
+                ?? 5000
+            ),
             'previewIframeResizerOptions' => $this->_previewIframeResizerOptions($generalConfig),
             'primarySiteId' => $primarySite ? (int)$primarySite->id : null,
             'primarySiteLanguage' => $primarySite->language ?? null,

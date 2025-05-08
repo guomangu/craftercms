@@ -15,6 +15,7 @@ use craft\base\Field;
 use craft\db\Migration;
 use craft\db\Table;
 use craft\elements\Asset;
+use craft\elements\Entry;
 use craft\elements\User;
 use craft\enums\CmsEdition;
 use craft\enums\PropagationMethod;
@@ -237,6 +238,13 @@ class Install extends Migration
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
         ]);
+        $this->createTable(Table::BULKOPEVENTS, [
+            'key' => $this->char(10)->notNull(),
+            'senderClass' => $this->string()->notNull(),
+            'eventName' => $this->string()->notNull(),
+            'timestamp' => $this->dateTime()->notNull(),
+            'PRIMARY KEY([[key]], [[senderClass]], [[eventName]])',
+        ]);
         $this->createTable(Table::CATEGORIES, [
             'id' => $this->integer()->notNull(),
             'groupId' => $this->integer()->notNull(),
@@ -407,6 +415,11 @@ class Install extends Migration
             'typeId' => $this->integer()->notNull(),
             'postDate' => $this->dateTime(),
             'expiryDate' => $this->dateTime(),
+            'status' => $this->enum('status', [
+                Entry::STATUS_LIVE,
+                Entry::STATUS_PENDING,
+                Entry::STATUS_EXPIRED,
+            ])->notNull()->defaultValue(Entry::STATUS_LIVE),
             'deletedWithEntryType' => $this->boolean()->null(),
             'deletedWithSection' => $this->boolean()->null(),
             'dateCreated' => $this->dateTime()->notNull(),
@@ -567,6 +580,17 @@ class Install extends Migration
             'dateUpdated' => $this->dateTime()->notNull(),
             'uid' => $this->uid(),
         ]);
+        $this->createTable(Table::SEARCHINDEXQUEUE, [
+            'id' => $this->primaryKey(),
+            'elementId' => $this->integer()->notNull(),
+            'siteId' => $this->integer()->notNull(),
+            'reserved' => $this->boolean()->notNull()->defaultValue(false),
+        ]);
+        $this->createTable(Table::SEARCHINDEXQUEUE_FIELDS, [
+            'jobId' => $this->integer()->notNull(),
+            'fieldHandle' => $this->string()->notNull(),
+            'PRIMARY KEY([[jobId]], [[fieldHandle]])',
+        ]);
         $this->createTable(Table::SECTIONS, [
             'id' => $this->primaryKey(),
             'structureId' => $this->integer(),
@@ -574,7 +598,7 @@ class Install extends Migration
             'handle' => $this->string()->notNull(),
             'type' => $this->enum('type', [Section::TYPE_SINGLE, Section::TYPE_CHANNEL, Section::TYPE_STRUCTURE])->notNull()->defaultValue('channel'),
             'enableVersioning' => $this->boolean()->defaultValue(false)->notNull(),
-            'maxAuthors' => $this->smallInteger()->unsigned()->defaultValue(1)->notNull(),
+            'maxAuthors' => $this->smallInteger()->unsigned(),
             'propagationMethod' => $this->string()->defaultValue(PropagationMethod::All->value)->notNull(),
             'defaultPlacement' => $this->enum('defaultPlacement', [Section::DEFAULT_PLACEMENT_BEGINNING, Section::DEFAULT_PLACEMENT_END])->defaultValue('end')->notNull(),
             'previewTargets' => $this->json(),
@@ -842,6 +866,7 @@ class Install extends Migration
         $this->createIndex(null, Table::ASSETS, ['filename', 'folderId'], false);
         $this->createIndex(null, Table::ASSETS, ['folderId'], false);
         $this->createIndex(null, Table::ASSETS, ['volumeId'], false);
+        $this->createIndex(null, Table::BULKOPEVENTS, ['timestamp'], false);
         $this->createIndex(null, Table::CATEGORIES, ['groupId'], false);
         $this->createIndex(null, Table::CATEGORYGROUPS, ['name'], false);
         $this->createIndex(null, Table::CATEGORYGROUPS, ['handle'], false);
@@ -874,6 +899,7 @@ class Install extends Migration
         $this->createIndex(null, Table::SYSTEMMESSAGES, ['language'], false);
         $this->createIndex(null, Table::ENTRIES, ['postDate'], false);
         $this->createIndex(null, Table::ENTRIES, ['expiryDate'], false);
+        $this->createIndex(null, Table::ENTRIES, ['status'], false);
         $this->createIndex(null, Table::ENTRIES, ['sectionId'], false);
         $this->createIndex(null, Table::ENTRIES, ['typeId'], false);
         $this->createIndex(null, Table::ENTRIES_AUTHORS, ['authorId'], false);
@@ -905,6 +931,8 @@ class Install extends Migration
         $this->createIndex(null, Table::RELATIONS, ['targetId'], false);
         $this->createIndex(null, Table::RELATIONS, ['sourceSiteId'], false);
         $this->createIndex(null, Table::REVISIONS, ['canonicalId', 'num'], true);
+        $this->createIndex(null, Table::SEARCHINDEXQUEUE, ['elementId', 'siteId', 'reserved'], false);
+        $this->createIndex(null, Table::SEARCHINDEXQUEUE_FIELDS, ['jobId', 'fieldHandle'], true);
         $this->createIndex(null, Table::SECTIONS, ['handle'], false);
         $this->createIndex(null, Table::SECTIONS, ['name'], false);
         $this->createIndex(null, Table::SECTIONS, ['structureId'], false);
@@ -1065,6 +1093,8 @@ class Install extends Migration
         $this->addForeignKey(null, Table::RELATIONS, ['sourceSiteId'], Table::SITES, ['id'], 'CASCADE', 'CASCADE');
         $this->addForeignKey(null, Table::REVISIONS, ['creatorId'], Table::USERS, ['id'], 'SET NULL', null);
         $this->addForeignKey(null, Table::REVISIONS, ['canonicalId'], Table::ELEMENTS, ['id'], 'CASCADE', null);
+        $this->addForeignKey(null, Table::SEARCHINDEXQUEUE, 'elementId', Table::ELEMENTS, 'id', 'CASCADE', null);
+        $this->addForeignKey(null, Table::SEARCHINDEXQUEUE_FIELDS, 'jobId', Table::SEARCHINDEXQUEUE, 'id', 'CASCADE', null);
         $this->addForeignKey(null, Table::SECTIONS, ['structureId'], Table::STRUCTURES, ['id'], 'SET NULL', null);
         $this->addForeignKey(null, Table::SECTIONS_ENTRYTYPES, ['sectionId'], Table::SECTIONS, ['id'], 'CASCADE', null);
         $this->addForeignKey(null, Table::SECTIONS_ENTRYTYPES, ['typeId'], Table::ENTRYTYPES, ['id'], 'CASCADE', null);

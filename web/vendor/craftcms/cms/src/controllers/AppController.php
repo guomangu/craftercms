@@ -132,6 +132,22 @@ class AppController extends Controller
     }
 
     /**
+     * Returns the HTML for a control panel icon.
+     *
+     * @return Response
+     * @since 5.7.0
+     */
+    public function actionIconSvg(): Response
+    {
+        $this->requireCpRequest();
+        $this->requireAcceptsJson();
+
+        return $this->asJson([
+            'iconSvg' => Cp::iconSvg($this->request->getRequiredParam('icon')),
+        ]);
+    }
+
+    /**
      * Returns the latest Craftnet API headers.
      *
      * @return Response
@@ -445,6 +461,7 @@ class AppController extends Controller
             default => 1597,
         };
 
+        $this->response->setNoCacheHeaders();
         return $this->renderTemplate('_special/licensing-issues.twig', [
             'issues' => $issues,
             'hash' => $hash,

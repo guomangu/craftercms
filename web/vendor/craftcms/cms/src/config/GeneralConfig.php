@@ -46,7 +46,7 @@ class GeneralConfig extends BaseConfig
     public const SNAKE_CASE = 'snake';
 
     /**
-     * @inerhitdoc
+     * @inheritdoc
      */
     protected static array $renamedSettings = [
         'activateAccountFailurePath' => 'invalidUserTokenPath',
@@ -72,9 +72,9 @@ class GeneralConfig extends BaseConfig
      *
      * The array can contain the following keys:
      *
-     * - `alwaysShowFocusRings` - Whether focus rings should always be shown when an element has focus.
      * - `useShapes` – Whether shapes should be used to represent statuses.
      * - `underlineLinks` – Whether links should be underlined.
+     * - `disableAutofocus` – Whether inputs should make use of the `autofocus` attribute.
      * - `notificationDuration` – How long notifications should be shown before they disappear automatically (in
      *   milliseconds). Set to `0` to show them indefinitely.
      *
@@ -88,7 +88,6 @@ class GeneralConfig extends BaseConfig
      * @since 3.6.4
      */
     public array $accessibilityDefaults = [
-        'alwaysShowFocusRings' => false,
         'useShapes' => false,
         'underlineLinks' => false,
         'disableAutofocus' => false,
@@ -2528,7 +2527,7 @@ class GeneralConfig extends BaseConfig
     public string $resourceBasePath = '@webroot/cpresources';
 
     /**
-     * @var string The URL to the root directory that should store published control panel resources.
+     * @var string The URL to the root directory where control panel resources are published.
      *
      * ::: code
      * ```php Static Config
@@ -2958,6 +2957,24 @@ class GeneralConfig extends BaseConfig
      * @since 3.1.0
      */
     public mixed $softDeleteDuration = 2592000;
+
+    /**
+     * @var bool Whether entries’ statuses should be stored statically, and only get updated on entry save, or when the
+     * `update-statuses` command is executed.
+     *
+     * ::: code
+     * ```php Static Config
+     * ->staticStatuses()
+     * ```
+     * ```shell Environment Override
+     * CRAFT_STATIC_STATUSES=true
+     * ```
+     * :::
+     *
+     * @group System
+     * @since 5.7.0
+     */
+    public bool $staticStatuses = false;
 
     /**
      * @var bool Whether user IP addresses should be stored/logged by the system.
@@ -3434,7 +3451,6 @@ class GeneralConfig extends BaseConfig
      *
      * The array can contain the following keys:
      *
-     * - `alwaysShowFocusRings` - Whether focus rings should always be shown when an element has focus.
      * - `useShapes` – Whether shapes should be used to represent statuses.
      * - `underlineLinks` – Whether links should be underlined.
      * - `disableAutofocus` – Whether search inputs should be focused on page load.
@@ -6155,7 +6171,7 @@ class GeneralConfig extends BaseConfig
     }
 
     /**
-     * The URL to the root directory that should store published control panel resources.
+     * The URL to the root directory where control panel resources are published.
      *
      * ```php
      * ->resourceBaseUrl('@web/craft-resources')
@@ -6644,6 +6660,31 @@ class GeneralConfig extends BaseConfig
     public function softDeleteDuration(mixed $value): self
     {
         $this->softDeleteDuration = ConfigHelper::durationInSeconds($value);
+        return $this;
+    }
+
+    /**
+     * Whether entries’ statuses should be stored statically, and only get updated on entry save, or when the
+     * `update-statuses` command is executed.
+     *
+     * ::: code
+     * ```php Static Config
+     * ->staticStatuses()
+     * ```
+     * ```shell Environment Override
+     * CRAFT_STATIC_STATUSES=true
+     * ```
+     * :::
+     *
+     * @group System
+     * @param bool $value
+     * @return self
+     * @see $staticStatuses
+     * @since 5.7.0
+     */
+    public function staticStatuses(bool $value = true): self
+    {
+        $this->staticStatuses = $value;
         return $this;
     }
 

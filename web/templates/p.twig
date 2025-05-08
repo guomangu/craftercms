@@ -1,20 +1,64 @@
 {% block content %}
 
+{% set adm = groupe.gensadmin[0] %}
+
+
+
+{% set abos = craft.entries()
+.section('abo')
+.relatedTo({
+    targetElement: groupe,
+    field: 'groupe'
+})
+.limit(17)
+.all() %}
+
 {# Conteneur principal pour aligner les personnes #}
 <div class="d-flex flex-wrap justify-content-center align-items-start gap-3">
+    
+        {# Affichage de l'image de la personne administratrice #}
+        {% if adm %}
+        <div class="text-center border-danger" style="width: 80px;">
+            {% set image = adm.img.one() %}
+            {% if image %}
+                <img src="{{ image.getUrl({width: 120, height: 120, mode: 'crop', quality: 80}) }}" {# Taille source un peu plus grande #}
+                    alt="Photo de {{ adm.title }}" {# Texte alternatif descriptif #}
+                    class="rounded-circle shadow-sm mb-1 mx-auto d-block" {# Bulle + Ombre légère + Marge en bas + Centrage #}
+                    style="width: 60px; height: 60px; object-fit: cover; background-color: #f8f9fa;" {# Taille fixe + Remplissage + Fond clair si image transparente #}
+                    loading="lazy"> {# Chargement différé pour les images #}
+            {% else %}
+                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center shadow-sm mb-1 mx-auto"
+                    style="width: 60px; height: 60px;"
+                    title="Pas d'image pour {{ adm.title }}"> {# Tooltip indiquant l'absence d'image #}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                    </svg>
+                </div>
+            {% endif %}
+    
+            {# Affichage du nom sous la bulle #}
+            <p class="mb-0 small text-center" style="line-height: 1.2; overflow-wrap: break-word;"> {# Texte petit, marge bas nulle, hauteur de ligne réduite, gestion des mots longs #}
+                {{ adm.title }}
+            </p>
+        </div> {# Fin du bloc pour l'administrateur #}
+        {% endif %} {# Fin de l'affichage de l'administrateur #}
+
+
+
+
     {# Boucle sur chaque personne inscrite dans le groupe #}
-    {% for gens in groupe.gensinscrit %}
+    {% for abo in abos %}
         {# Bloc pour une personne (image + nom) #}
         <div class="text-center border-danger" style="width: 80px;"> {# Largeur fixe pour contrôler l'espacement #}
 
             {# Récupération de l'image #}
-            {% set image = gens.img.one() %}
+            {% set image = abo.gens[0].img.one() %}
 
             {# Condition pour afficher l'image ou le placeholder #}
             {% if image %}
                 {# Affichage de l'image en bulle #}
                 <img src="{{ image.getUrl({width: 120, height: 120, mode: 'crop', quality: 80}) }}" {# Taille source un peu plus grande #}
-                     alt="Photo de {{ gens.title }}" {# Texte alternatif descriptif #}
+                     alt="Photo de {{ abo.gens[0].title }}" {# Texte alternatif descriptif #}
                      class="rounded-circle shadow-sm mb-1 mx-auto d-block" {# Bulle + Ombre légère + Marge en bas + Centrage #}
                      style="width: 60px; height: 60px; object-fit: cover; background-color: #f8f9fa;" {# Taille fixe + Remplissage + Fond clair si image transparente #}
                      loading="lazy"> {# Chargement différé pour les images #}
@@ -22,7 +66,7 @@
                 {# Placeholder si pas d'image : icône dans un cercle #}
                 <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center shadow-sm mb-1 mx-auto"
                      style="width: 60px; height: 60px;"
-                     title="Pas d'image pour {{ gens.title }}"> {# Tooltip indiquant l'absence d'image #}
+                     title="Pas d'image pour {{ abo.gens[0].title }}"> {# Tooltip indiquant l'absence d'image #}
                      {# Icône Bootstrap (Personne) #}
                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
                         <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
@@ -32,7 +76,7 @@
 
             {# Affichage du nom sous la bulle #}
             <p class="mb-0 small" style="line-height: 1.2; overflow-wrap: break-word;"> {# Texte petit, marge bas nulle, hauteur de ligne réduite, gestion des mots longs #}
-                {{ gens.title }}
+                {{ abo.gens[0].title }}
             </p>
 
         </div> {# Fin du bloc pour une personne #}
@@ -56,18 +100,20 @@
 <form method="post" id="p-form-{{ groupe.id }}" class="card card-body collapse border-danger" accept-charset="UTF-8" enctype="multipart/form-data">
     {{ csrfInput() }} {# Important pour la sécurité CSRF #}
     {# {{ actionInpust('guest-entries/save') }} #}
-    {{ actionInput('entries/save-entry') }}
+    {{ actionInput('guest-entries/save') }}
     {{ hiddenInput('enabled', '1') }}
-    {{ hiddenInput('sectionId', 12) }}
-    {{ hiddenInput('entryId', groupe.id) }}
+    {{ hiddenInput('sectionId', 14) }}
+    <input type="hidden" name="fields[groupe][]" value="{{ groupe.id }}"> {# ID du groupe #}
+    <input type="hidden" name="fields[inviteur][]" value="{{ user.id }}">
+    {# 2. Ajouter un champ caché pour le groupe #}
 
 
     {# 1. Ajouter des champs cachés pour TOUS les gens DÉJÀ liés #}
-    {% if groupe.gensinscrit is defined and groupe.gensinscrit.exists() %}
+    {# {% if groupe.gensinscrit is defined and groupe.gensinscrit.exists() %}
         {% for existingPerson in groupe.gensinscrit.all() %}
             <input type="hidden" name="fields[gensinscrit][]" value="{{ existingPerson.id }}">
         {% endfor %}
-    {% endif %}
+    {% endif %} #}
 
     {# <input type="hidden" name="title" value="{{groupe.title}}"> #}
 
@@ -98,7 +144,7 @@
     <div class="mb-3">
         <label for="recois_id_pilote" class="form-label">Utilisateur trouvé</label>
         <select id="recois_id_pilote" 
-                name="fields[gensinscrit][]" 
+                name="fields[gens][]" 
                 class="form-select" 
                 required 
                 aria-label="Sélectionnez l'utilisateur à inviter"
@@ -111,6 +157,12 @@
         {# <div class="invalid-feedback">Veuillez sélectionner un utilisateur.</div> #}
     </div>
 
+    <div class="mb-3">
+        <label for="message" class="form-label">Message d'invitation</label>
+        <input id="message" name="title" class="form-control" placeholder="Message d'invitation" required></input>
+    </div>
+
+
     {# Bouton de soumission #}
     <button type="submit" class="btn btn-secondary d-inline-flex align-items-center">
         {# Icône d'invitation Bootstrap Icons #}
@@ -120,7 +172,6 @@
         </svg>
         Inviter cet utilisateur
     </button>
-
 </form> 
 
 <script>

@@ -21,6 +21,7 @@ use craft\db\Connection;
 use craft\db\FixedOrderExpression;
 use craft\db\Query;
 use craft\db\QueryAbortedException;
+use craft\db\QueryParam;
 use craft\db\Table;
 use craft\elements\ElementCollection;
 use craft\elements\User;
@@ -207,6 +208,14 @@ class ElementQuery extends Query implements ElementQueryInterface
      * @since 3.2.0
      */
     public ?int $draftCreator = null;
+
+    /**
+     * @var bool Whether only canonical elements should be included in the
+     * results, including elements that reference another canonical element via
+     * `canonicalId` so long as they aren’t a draft.
+     * @since 5.7.0
+     */
+    public bool $canonicalsOnly = false;
 
     /**
      * @var bool Whether only unpublished drafts which have been saved after initial creation should be included in the results.
@@ -797,6 +806,16 @@ class ElementQuery extends Query implements ElementQueryInterface
         if ($value === true && $this->drafts === false) {
             $this->drafts = true;
         }
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     * @uses $canonicalsOnly
+     */
+    public function canonicalsOnly(bool $value = true): static
+    {
+        $this->canonicalsOnly = $value;
         return $this;
     }
 
@@ -2730,6 +2749,18 @@ class ElementQuery extends Query implements ElementQueryInterface
 
                 // Make sure the custom field exists in one of the field layouts
                 if (!isset($fieldsByHandle[$handle])) {
+                    // If it looks like null/:empty: is a valid option, let it slide
+                    $value = is_array($fieldAttributes->$handle) && isset($fieldAttributes->$handle['value'])
+                        ? $fieldAttributes->$handle['value']
+                        : $fieldAttributes->$handle;
+                    if (is_array($value) && in_array(null, $value, true)) {
+                        $values = [...$value];
+                        $operator = QueryParam::extractOperator($values) ?? QueryParam::OR;
+                        if ($operator === QueryParam::OR) {
+                            continue;
+                        }
+                    }
+
                     throw new QueryAbortedException("No custom field with the handle \"$handle\" exists in the field layouts involved with this element query.");
                 }
 
@@ -3130,7 +3161,16 @@ class ElementQuery extends Query implements ElementQueryInterface
                 ]);
             }
 
-            if ($this->savedDraftsOnly) {
+            if ($this->canonicalsOnly) {
+                $this->subQuery->andWhere([
+                    'or',
+                    ['elements.draftId' => null],
+                    [
+                        'elements.canonicalId' => null,
+                        ...($this->savedDraftsOnly ? ['drafts.saved' => true] : []),
+                    ],
+                ]);
+            } elseif ($this->savedDraftsOnly) {
                 $this->subQuery->andWhere([
                     'or',
                     ['elements.draftId' => null],
@@ -3369,32 +3409,21 @@ class ElementQuery extends Query implements ElementQueryInterface
             $orderBy = array_filter($orderBy, fn($value) => !$value instanceof OrderByPlaceholderExpression);
         }
 
-        // Rename orderBy keys based on the real column name mapping
-        // (yes this is awkward but we need to preserve the order of the keys!)
+        // Parse orderBy keys for column mappings
         $orderByColumns = array_keys($orderBy);
-
-        foreach (array_keys($this->_columnMap) as $orderValue) {
-            // Are we ordering by this column name?
-            $pos = array_search($orderValue, $orderByColumns, true);
-
-            if ($pos !== false) {
-                $columnName = $this->_resolveColumnMapping($orderValue);
-
-                // Swap it with the mapped column name
-                if (is_array($columnName)) {
-                    $params = [];
-                    $orderByColumns[$pos] = (new CoalesceColumnsExpression($columnName))->getSql($params);
-                } else {
-                    if (isset($this->_columnsToCast[$orderValue])) {
-                        $orderByColumns[$pos] = "CAST($columnName AS {$this->_columnsToCast[$orderValue]})";
-                    } else {
-                        $orderByColumns[$pos] = $columnName;
-                    }
-                }
-
-                $orderBy = array_combine($orderByColumns, $orderBy);
+        foreach ($orderByColumns as $i => $column) {
+            $parsed = $this->_parseStrForColumnMappings($column);
+            // add CAST()?
+            if (
+                isset($this->_columnsToCast[$column]) &&
+                !str_contains($parsed, 'COALESCE(')
+            ) {
+                $orderByColumns[$i] = "CAST($parsed AS {$this->_columnsToCast[$column]})";
+            } else {
+                $orderByColumns[$i] = $parsed;
             }
         }
+        $orderBy = array_combine($orderByColumns, $orderBy);
 
         // swap `score` direction value with a fixed order expression
         if (isset($this->_searchResults)) {
@@ -3600,7 +3629,7 @@ class ElementQuery extends Query implements ElementQueryInterface
         }
 
         if (is_string($this->where)) {
-            $where = $this->_parseStringCondition($this->where);
+            $where = $this->_parseStrForColumnMappings($this->where);
         } elseif (is_array($this->where)) {
             $where = $this->_parseArrayCondition($this->where);
         } else {
@@ -3610,14 +3639,14 @@ class ElementQuery extends Query implements ElementQueryInterface
         $this->subQuery->andWhere($where);
     }
 
-    private function _parseStringCondition(string $condition): string
+    private function _parseStrForColumnMappings(string $str): string
     {
-        if (!str_contains($condition, '[')) {
-            return $this->_resolveColumnMappingForCondition($condition) ?? $condition;
+        if (!str_contains($str, '[')) {
+            return $this->_columnMappingSql($str) ?? $str;
         }
 
-        return preg_replace_callback('/\[\[(\w+(?:\.\w+)?)]]/', function(array $match) {
-            $mapping = $this->_resolveColumnMappingForCondition($match[1]);
+        return preg_replace_callback('/(?<!\.)\[\[(\w+(?:\.\w+)?)]]/', function(array $match) {
+            $mapping = $this->_columnMappingSql($match[1]);
             if ($mapping === null) {
                 return $match[0];
             }
@@ -3625,10 +3654,10 @@ class ElementQuery extends Query implements ElementQueryInterface
                 return "[[$mapping]]";
             }
             return $mapping;
-        }, $condition);
+        }, $str);
     }
 
-    private function _resolveColumnMappingForCondition(string $str): ?string
+    private function _columnMappingSql(string $str): ?string
     {
         if (!isset($this->_columnMap[$str])) {
             return null;
@@ -3650,7 +3679,7 @@ class ElementQuery extends Query implements ElementQueryInterface
             if (in_array($operator, ['NOT', 'AND', 'OR'])) {
                 foreach ($condition as $value) {
                     if (is_string($value)) {
-                        $value = $this->_parseStringCondition($value);
+                        $value = $this->_parseStrForColumnMappings($value);
                     } elseif (is_array($value)) {
                         $value = $this->_parseArrayCondition($value);
                     }
@@ -3658,14 +3687,14 @@ class ElementQuery extends Query implements ElementQueryInterface
                 }
             } else {
                 if (isset($condition[0]) && is_string($condition[0])) {
-                    $condition[0] = $this->_resolveColumnMappingForCondition($condition[0]) ?? $condition[0];
+                    $condition[0] = $this->_columnMappingSql($condition[0]) ?? $condition[0];
                 }
                 array_push($parsed, ...$condition);
             }
         } else {
             // Hash format: [column => value]
             foreach ($condition as $key => $value) {
-                $key = $this->_resolveColumnMappingForCondition($key) ?? $key;
+                $key = $this->_columnMappingSql($key) ?? $key;
                 $parsed[$key] = $value;
             }
         }

@@ -23,14 +23,18 @@ use craft\fieldlayoutelements\CustomField;
 use craft\fields\MissingField;
 use craft\fields\PlainText;
 use craft\helpers\ArrayHelper;
+use craft\helpers\Component;
 use craft\helpers\Cp;
 use craft\helpers\Html;
 use craft\helpers\StringHelper;
+use craft\helpers\Typecast;
 use craft\helpers\UrlHelper;
 use craft\models\FieldLayout;
 use craft\models\FieldLayoutTab;
 use craft\web\assets\fieldsettings\FieldSettingsAsset;
 use craft\web\Controller;
+use ReflectionException;
+use ReflectionProperty;
 use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
@@ -350,8 +354,32 @@ JS, [
         $this->requirePostRequest();
         $this->requireAcceptsJson();
 
+        /** @var class-string<FieldInterface> $type */
         $type = $this->request->getRequiredBodyParam('type');
         $field = Craft::$app->getFields()->createField($type);
+
+        /** @var class-string<FieldInterface>|null $oldType */
+        $oldType = $this->request->getBodyParam('oldType');
+        if ($oldType && Component::validateComponentClass($oldType, FieldInterface::class)) {
+            $settingsStr = $this->request->getBodyParam('settings');
+            parse_str($settingsStr, $postedOldSettings);
+            $oldNamespace = $this->request->getBodyParam('oldNamespace');
+            $settings = ArrayHelper::getValue($postedOldSettings, $oldNamespace, []);
+
+            // Remove any settings that aren't defined by the same class between both types
+            $settings = array_filter($settings, function($attribute) use ($type, $oldType) {
+                try {
+                    $r1 = new ReflectionProperty($type, $attribute);
+                    $r2 = new ReflectionProperty($oldType, $attribute);
+                    return $r1->getDeclaringClass()->name === $r2->getDeclaringClass()->name;
+                } catch (ReflectionException) {
+                    return false;
+                }
+            }, ARRAY_FILTER_USE_KEY);
+
+            Typecast::properties($type, $settings);
+            Craft::configure($field, $settings);
+        }
 
         $view = Craft::$app->getView();
         $html = $view->renderTemplate('settings/fields/_type-settings.twig', [

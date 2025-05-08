@@ -117,7 +117,7 @@
           enctype="multipart/form-data">
         
             {{ csrfInput() }}
-            {{ actionInput('entries/save-entry') }}
+            {{ actionInput('guest-entries/save') }}
             {{ hiddenInput('sectionId', 13) }} {# Assurez-vous que 13 est le bon ID #}
             {{ hiddenInput('enabled', '1') }}
             

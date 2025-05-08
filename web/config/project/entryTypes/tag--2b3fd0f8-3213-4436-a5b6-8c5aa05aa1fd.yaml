@@ -36,7 +36,25 @@ fieldLayouts:
             warning: null
             width: 100
           -
+            dateAdded: '2025-05-07T19:43:02+00:00'
+            editCondition: null
+            elementCondition: null
+            fieldUid: 97e2c722-27aa-45db-a906-73bdda35d91b # groupe
+            handle: null
+            includeInCards: false
+            instructions: null
+            label: null
+            providesThumbs: false
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 2694d621-7f8c-42e0-a8cc-a36f9ec890a3
+            userCondition: null
+            warning: null
+            width: 100
+          -
             dateAdded: '2025-04-12T12:59:02+00:00'
+            editCondition: null
             elementCondition: null
             fieldUid: 06ef7080-b2fe-4693-864c-a57b053238a3 # moment
             handle: null
@@ -53,6 +71,7 @@ fieldLayouts:
             width: 100
           -
             dateAdded: '2025-04-12T12:59:02+00:00'
+            editCondition: null
             elementCondition: null
             fieldUid: f7d085ff-ca17-4634-af22-21ab371bb1b9 # action
             handle: null
@@ -69,6 +88,7 @@ fieldLayouts:
             width: 100
           -
             dateAdded: '2025-04-12T12:59:02+00:00'
+            editCondition: null
             elementCondition: null
             fieldUid: 86ee3b90-9b58-4d1e-8824-7ffbb49dfad3 # article
             handle: null
@@ -85,6 +105,7 @@ fieldLayouts:
             width: 100
           -
             dateAdded: '2025-04-12T12:59:02+00:00'
+            editCondition: null
             elementCondition: null
             fieldUid: 61e4ba75-3c17-4a7f-acc6-322b97ee9528 # gens
             handle: null

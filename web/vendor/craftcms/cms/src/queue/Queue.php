@@ -358,6 +358,10 @@ class Queue extends \yii\queue\cli\Queue implements QueueInterface
                 'id' => $id,
             ], [], $this->db);
         });
+
+        if ($this->proxyQueue instanceof ReleasableQueueInterface) {
+            $this->proxyQueue->release($id);
+        }
     }
 
     /**
@@ -370,6 +374,10 @@ class Queue extends \yii\queue\cli\Queue implements QueueInterface
                 'channel' => $this->channel(),
             ], [], $this->db);
         });
+
+        if ($this->proxyQueue instanceof ReleasableQueueInterface) {
+            $this->proxyQueue->releaseAll();
+        }
     }
 
     /**

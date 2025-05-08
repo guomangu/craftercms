@@ -2020,8 +2020,10 @@ class ProjectConfig extends Component
      */
     private function _getUserData(array $data): array
     {
-        $fieldLayout = Craft::$app->getFields()->getLayoutByType(User::class);
-        if ($fieldLayoutConfig = $fieldLayout->getConfig()) {
+        $fieldLayout = Craft::$app->getFields()->getLayoutByType(User::class, false);
+        $fieldLayoutConfig = $fieldLayout?->getConfig();
+
+        if ($fieldLayoutConfig) {
             $data['fieldLayouts'] = [
                 $fieldLayout->uid => $fieldLayoutConfig,
             ];
@@ -2048,8 +2050,10 @@ class ProjectConfig extends Component
     private function _getAddressesData(): array
     {
         $data = [];
-        $fieldLayout = Craft::$app->getFields()->getLayoutByType(Address::class);
-        if ($fieldLayoutConfig = $fieldLayout->getConfig()) {
+        $fieldLayout = Craft::$app->getFields()->getLayoutByType(Address::class, false);
+        $fieldLayoutConfig = $fieldLayout?->getConfig();
+
+        if ($fieldLayoutConfig) {
             $data['fieldLayouts'] = [
                 $fieldLayout->uid => $fieldLayoutConfig,
             ];

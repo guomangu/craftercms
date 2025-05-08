@@ -309,7 +309,6 @@ class View extends \yii\web\View
      */
     private array $_assetBundleBuffers = [];
 
-
     /**
      * @var array
      * @see startJsImportBuffer()
@@ -334,6 +333,12 @@ class View extends \yii\web\View
      * @see registerJsImport()
      */
     private array $_jsImports = [];
+
+    /**
+     * @var string[] The icons that should be registered to the page.
+     * @see registerIcons()
+     */
+    private array $_icons = [];
 
     /**
      * @var callable[][]
@@ -1610,6 +1615,20 @@ JS;
     }
 
     /**
+     * Registers icons for `Craft.ui.icon()`.
+     *
+     * @param string[] $icons The icons to be registered
+     * @since 5.7.0
+     */
+    public function registerIcons(array $icons): void
+    {
+        $this->_icons = [
+            ...$this->_icons,
+            ...array_flip($icons),
+        ];
+    }
+
+    /**
      * Returns the active namespace.
      *
      * This is the default namespaces that will be used when [[namespaceInputs()]], [[namespaceInputName()]],
@@ -2254,6 +2273,18 @@ JS;
         }
         if (!empty($this->_html[self::POS_END])) {
             $lines[] = implode("\n", $this->_html[self::POS_END]);
+        }
+
+        if (!empty($this->_icons)) {
+            $icons = [];
+            foreach (array_keys($this->_icons) as $icon) {
+                $icons[$icon] = Cp::iconSvg($icon);
+            }
+            $iconsJs = Json::encode($icons);
+            $this->js[self::POS_END][] = <<<JS
+Craft.icons = $iconsJs;
+JS;
+            $this->_icons = [];
         }
 
         $html = parent::renderBodyEndHtml($ajaxMode);

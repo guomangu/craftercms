@@ -18,16 +18,20 @@ use craft\elements\db\ElementQuery;
 use craft\events\IndexKeywordsEvent;
 use craft\events\SearchEvent;
 use craft\helpers\ArrayHelper;
+use craft\helpers\Component as ComponentHelper;
 use craft\helpers\Db;
 use craft\helpers\ElementHelper;
+use craft\helpers\Queue;
 use craft\helpers\Search as SearchHelper;
 use craft\helpers\StringHelper;
+use craft\queue\jobs\UpdateSearchIndex;
 use craft\search\SearchQuery;
 use craft\search\SearchQueryTerm;
 use craft\search\SearchQueryTermGroup;
 use Throwable;
 use yii\base\Component;
-use yii\db\Exception;
+use yii\base\Exception;
+use yii\db\Exception as DbException;
 use yii\db\Expression;
 use yii\db\Schema;
 
@@ -209,6 +213,157 @@ class Search extends Component
     }
 
     /**
+     * Queues up an element to be indexed.
+     *
+     * @param ElementInterface $element
+     * @param string[] $fieldHandles
+     * @since 5.7.0
+     */
+    public function queueIndexElement(ElementInterface $element, array $fieldHandles): void
+    {
+        $this->createOrUpdateIndexJob($element, $fieldHandles);
+
+        Queue::push(new UpdateSearchIndex([
+            'elementType' => get_class($element),
+            'elementId' => $element->id,
+            'siteId' => $element->siteId,
+            'queued' => true,
+        ]), 2048);
+    }
+
+    private function createOrUpdateIndexJob(ElementInterface $element, array $fieldHandles): void
+    {
+        $jobId = $this->pendingIndexJobId($element->id, $element->siteId);
+
+        if ($jobId) {
+            if (empty($fieldHandles)) {
+                // nothing more to do
+                return;
+            }
+
+            // get a lock on the job and make sure it still exists && is pending
+            $mutex = Craft::$app->getMutex();
+            $lockName = "searchqueue:$jobId";
+
+            if ($mutex->acquire($lockName)) {
+                try {
+                    if ($this->isIndexJobPending($jobId)) {
+                        foreach ($fieldHandles as $fieldHandle) {
+                            Db::upsert(Table::SEARCHINDEXQUEUE_FIELDS, [
+                                'jobId' => $jobId,
+                                'fieldHandle' => $fieldHandle,
+                            ]);
+                        }
+                        return;
+                    }
+                } finally {
+                    $mutex->release($lockName);
+                }
+            }
+        }
+
+        $db = Craft::$app->getDb();
+        $db->transaction(function() use ($element, $fieldHandles, $db) {
+            Db::insert(Table::SEARCHINDEXQUEUE, [
+                'elementId' => $element->id,
+                'siteId' => $element->siteId,
+            ], $db);
+            $jobId = $db->getLastInsertID(Table::SEARCHINDEXQUEUE);
+            $fieldData = array_map(fn(string $fieldHandle) => [$jobId, $fieldHandle], $fieldHandles);
+            Db::batchInsert(Table::SEARCHINDEXQUEUE_FIELDS, ['jobId', 'fieldHandle'], $fieldData, $db);
+        });
+    }
+
+    /**
+     * Indexes the attributes of a given element, only if it’s queued.
+     *
+     * @param int $elementId
+     * @param int $siteId
+     * @param class-string<ElementInterface>|null $elementType
+     * @since 5.7.0
+     */
+    public function indexElementIfQueued(int $elementId, int $siteId, ?string $elementType = null): void
+    {
+        $jobId = $this->pendingIndexJobId($elementId, $siteId);
+
+        if (!$jobId) {
+            // no pending jobs
+            return;
+        }
+
+        // get a lock on the job and then mark it as reserved,
+        // so there's no chance another process reserves it/modifies it, overlapping with this one
+        $mutex = Craft::$app->getMutex();
+        $lockName = "searchqueue:$jobId";
+        if (!$mutex->acquire($lockName, 5)) {
+            throw new Exception("Unable to acquire a mutex lock for search queue job $jobId");
+        }
+
+        try {
+            if (!Db::update(Table::SEARCHINDEXQUEUE, ['reserved' => true], ['id' => $jobId])) {
+                // another process must be handling the same job
+                return;
+            }
+        } finally {
+            $mutex->release($lockName);
+        }
+
+        try {
+            // Figure out which fields need to be updated for the element
+            $fieldHandles = (new Query())
+                ->select(['fieldHandle'])
+                ->from(Table::SEARCHINDEXQUEUE_FIELDS)
+                ->where(['jobId' => $jobId])
+                ->column();
+
+            $elementType ??= Craft::$app->getElements()->getElementTypeById($elementId);
+
+            if ($elementType && ComponentHelper::validateComponentClass($elementType, ElementInterface::class)) {
+                $element = $elementType::find()
+                    ->drafts(null)
+                    ->provisionalDrafts(null)
+                    ->id($elementId)
+                    ->siteId($siteId)
+                    ->status(null)
+                    ->one();
+
+                if ($element) {
+                    $this->indexElementAttributes($element, $fieldHandles);
+                }
+            }
+
+            Db::delete(Table::SEARCHINDEXQUEUE, ['id' => $jobId]);
+        } catch (Throwable $e) {
+            Db::update(Table::SEARCHINDEXQUEUE, ['reserved' => false], ['id' => $jobId]);
+            throw $e;
+        }
+    }
+
+    private function pendingIndexJobId(int $elementId, int $siteId): ?int
+    {
+        return (new Query())
+            ->select('id')
+            ->from(Table::SEARCHINDEXQUEUE)
+            ->where([
+                'elementId' => $elementId,
+                'siteId' => $siteId,
+                'reserved' => false,
+            ])
+            ->scalar();
+    }
+
+    private function isIndexJobPending(int $jobId): bool
+    {
+        $job = (new Query())
+            ->select('reserved')
+            ->from(Table::SEARCHINDEXQUEUE)
+            ->where(['id' => $jobId])
+            ->one();
+
+        return $job && !$job['reserved'];
+    }
+
+    /**
      * Returns whether we should search for the resulting elements up front via [[searchElements()]],
      * rather than supply a subquery which should be applied to the main element query via [[createDbQuery()]].
      *
@@ -259,7 +414,12 @@ class Search extends Component
 
         $results = $query
             ->andWhere(['elementId' => $elementQuery])
-            ->cache(true, new ElementQueryTagDependency($elementQuery))
+            ->cache(true, new ElementQueryTagDependency($elementQuery, [
+                'tags' => [
+                    'element-index-query',
+                    sprintf('element-index-query::%s', $elementQuery->elementType),
+                ],
+            ]))
             ->all();
 
         // Score the results
@@ -496,7 +656,7 @@ SQL;
             try {
                 Db::insert(Table::SEARCHINDEX, $columns);
                 return;
-            } catch (Exception $e) {
+            } catch (DbException $e) {
                 if (str_contains($e->getPrevious()?->getMessage(), 'deadlock')) {
                     // A gap lock was probably hit. Try again in one second
                     // https://github.com/craftcms/cms/issues/15221

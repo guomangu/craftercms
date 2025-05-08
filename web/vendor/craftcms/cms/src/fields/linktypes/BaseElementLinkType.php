@@ -15,6 +15,7 @@ use craft\fields\Link;
 use craft\helpers\Cp;
 use craft\helpers\Html;
 use craft\services\ElementSources;
+use GraphQL\Type\Definition\Type;
 use Illuminate\Support\Collection;
 use yii\base\InvalidArgumentException;
 
@@ -47,6 +48,17 @@ abstract class BaseElementLinkType extends BaseLinkType
     public static function displayName(): string
     {
         return static::elementType()::displayName();
+    }
+
+    /**
+     * Returns the GraphQL type that elements of this type should
+     *
+     * @return Type
+     * @since 5.7.0
+     */
+    public static function elementGqlType(): Type
+    {
+        return static::elementType()::baseGqlType();
     }
 
     /**
@@ -128,10 +140,12 @@ abstract class BaseElementLinkType extends BaseLinkType
     const element = ev.elements[0];
     input.val(`{\${refHandle}:\${element.id}@\${element.siteId}:url}`);
     field.updateLabel(element.label);
+    field.updateFilename(element.\$element.data('filename'));
   });
   elementSelect.on('removeElements', () => {
     input.val('');
     field.updateLabel('');
+    field.updateFilename('');
   });
 })();
 JS, [

@@ -37,14 +37,9 @@ trait NestedElementTrait
         switch ($handle) {
             case 'owner':
             case 'primaryOwner':
-                /** @var array<NestedElementInterface&self> $sourceElements */
-                $ownerType = $sourceElements[0]->ownerType();
-                if (!$ownerType) {
-                    return false;
-                }
-
+                /** @phpstan-ignore-next-line */
                 return [
-                    'elementType' => $ownerType,
+                    /** @phpstan-ignore-next-line */
                     'map' => array_filter(array_map(function(NestedElementInterface $element) use ($handle) {
                         $ownerId = match ($handle) {
                             'owner' => $element->getOwnerId(),
@@ -477,17 +472,24 @@ trait NestedElementTrait
             $this->sortOrder = $max ? $max + 1 : 1;
         }
 
+        $ownerIds = array_unique([
+            $this->getPrimaryOwnerId(),
+            $ownerId,
+        ]);
+
         if (!$isNew) {
             Db::delete(Table::ELEMENTS_OWNERS, [
                 'elementId' => $this->id,
-                'ownerId' => $ownerId,
+                'ownerId' => $ownerIds,
             ]);
         }
 
-        Db::insert(Table::ELEMENTS_OWNERS, [
-            'elementId' => $this->id,
-            'ownerId' => $ownerId,
-            'sortOrder' => $this->sortOrder,
-        ]);
+        foreach ($ownerIds as $ownerId) {
+            Db::insert(Table::ELEMENTS_OWNERS, [
+                'elementId' => $this->id,
+                'ownerId' => $ownerId,
+                'sortOrder' => $this->sortOrder,
+            ]);
+        }
     }
 }

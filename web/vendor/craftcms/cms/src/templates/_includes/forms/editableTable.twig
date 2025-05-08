@@ -144,6 +144,15 @@
                                                 describedBy: describedBy,
                                             } only %}
                                         </div>
+                                    {%- case 'icon' -%}
+                                        {% include '_includes/forms/iconPicker' with {
+                                          name: cellName,
+                                          value,
+                                          small: true,
+                                          disabled: static,
+                                          labelledBy: headingId,
+                                          describedBy: describedBy,
+                                        } only %}
                                     {%- case 'color' -%}
                                         {% include "_includes/forms/color" with {
                                             name: cellName,
@@ -236,7 +245,7 @@
                 {% if allowReorder -%}
                     <td class="thin action">
                       <div class="flex flex-nowrap">
-                        <a class="move icon" title="{{ 'Reorder'|t('app') }}" aria-label="{{ 'Reorder'|t('app') }}" type="button" role="button"></a>
+                        <a class="move icon" title="{{ 'Reorder'|t('app') }}"></a>
                         {{~ disclosureMenu(actionMenuItems, {
                           buttonAttributes: {
                             'aria-label': actionBtnLabel,

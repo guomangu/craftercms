@@ -6,7 +6,6 @@
 
 {% set bodyClass = (bodyClass ?? [])|explodeClass|merge([
     orientation,
-    not (currentUser.getPreference('alwaysShowFocusRings') ?? a11yDefaults['alwaysShowFocusRings'] ?? false) ? 'reduce-focus-visibility',
     (currentUser.getPreference('useShapes') ?? a11yDefaults['useShapes'] ?? false) ? 'use-shapes',
     (currentUser.getPreference('underlineLinks') ?? a11yDefaults['underlineLinks'] ?? false) ? 'underline-links',
     requestedSite ? "site--#{requestedSite.handle}",

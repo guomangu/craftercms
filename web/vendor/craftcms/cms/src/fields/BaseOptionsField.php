@@ -25,6 +25,7 @@ use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
 use craft\helpers\Json;
 use craft\helpers\StringHelper;
+use craft\validators\ColorValidator;
 use GraphQL\Type\Definition\Type;
 use yii\db\Schema;
 
@@ -51,6 +52,18 @@ abstract class BaseOptionsField extends Field implements PreviewableFieldInterfa
      * @var bool Whether the field should support optgroups
      */
     protected static bool $optgroups = false;
+
+    /**
+     * @var bool Whether field options should include an icon setting
+     * @since 5.7.0
+     */
+    protected static bool $optionIcons = false;
+
+    /**
+     * @var bool Whether field options should include a color setting
+     * @since 5.7.0
+     */
+    protected static bool $optionColors = false;
 
     /**
      * @var bool Whether the field should allow adding a custom option
@@ -189,6 +202,7 @@ abstract class BaseOptionsField extends Field implements PreviewableFieldInterfa
         $values = [];
         $hasDuplicateLabels = false;
         $hasDuplicateValues = false;
+        $hasInvalidColors = false;
         $optgroup = '__root__';
 
         foreach ($this->options as &$option) {
@@ -215,6 +229,18 @@ abstract class BaseOptionsField extends Field implements PreviewableFieldInterfa
                 $hasDuplicateValues = true;
             }
             $labels[$optgroup][$label] = $values[$value] = true;
+
+            if (static::$optionColors && !empty($option['color'])) {
+                $option['color'] = ColorValidator::normalizeColor($option['color']);
+                $validator = new ColorValidator();
+                if (!$validator->validate($option['color'])) {
+                    $hasInvalidColors = true;
+                    $option['color'] = [
+                        'value' => $option['color'],
+                        'hasErrors' => true,
+                    ];
+                }
+            }
         }
 
         if ($hasDuplicateLabels) {
@@ -222,6 +248,9 @@ abstract class BaseOptionsField extends Field implements PreviewableFieldInterfa
         }
         if ($hasDuplicateValues) {
             $this->addError('options', Craft::t('app', 'All option values must be unique.'));
+        }
+        if ($hasInvalidColors) {
+            $this->addError('options', Craft::t('app', 'All color values must be valid.'));
         }
     }
 
@@ -241,7 +270,7 @@ abstract class BaseOptionsField extends Field implements PreviewableFieldInterfa
                 'heading' => Craft::t('app', 'Optgroup?'),
                 'type' => 'checkbox',
                 'class' => 'thin',
-                'toggle' => ['!value', '!default'],
+                'toggle' => ['!value', '!icon', '!color', '!default'],
             ];
         }
         $cols['label'] = [
@@ -254,6 +283,19 @@ abstract class BaseOptionsField extends Field implements PreviewableFieldInterfa
             'type' => 'singleline',
             'class' => 'code',
         ];
+        if (static::$optionIcons) {
+            $cols['icon'] = [
+                'heading' => Craft::t('app', 'Icon'),
+                'type' => 'icon',
+                'class' => 'thin',
+            ];
+        }
+        if (static::$optionColors) {
+            $cols['color'] = [
+                'heading' => Craft::t('app', 'Color'),
+                'type' => 'color',
+            ];
+        }
         $cols['default'] = [
             'heading' => Craft::t('app', 'Default?'),
             'type' => 'checkbox',
@@ -576,7 +618,10 @@ abstract class BaseOptionsField extends Field implements PreviewableFieldInterfa
      *
      * @return string
      */
-    abstract protected function optionsSettingLabel(): string;
+    protected function optionsSettingLabel(): string
+    {
+        return Craft::t('app', 'Options');
+    }
 
     /**
      * Returns the available options (and optgroups) for the field.
@@ -640,6 +685,8 @@ abstract class BaseOptionsField extends Field implements PreviewableFieldInterfa
                 $translatedOptions[] = [
                     'label' => Craft::t('site', $option['label']),
                     'value' => $encode ? $this->encodeValue($option['value']) : $option['value'],
+                    'color' => static::$optionColors && !empty($option['color']) ? $option['color'] : null,
+                    'icon' => static::$optionIcons && (!empty($option['icon']) || ($option['icon'] ?? null) === '0') ? $option['icon'] : null,
                 ];
             }
         }

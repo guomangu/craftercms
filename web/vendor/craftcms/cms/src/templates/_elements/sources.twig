@@ -2,7 +2,7 @@
 
 {% hook 'cp.elements.sources' %}
 
-{% macro sourceLink(key, source, isTopLevel, elementType, baseSortOptions, tableColumns, defaultTableColumns, viewModes) %}
+{% macro sourceLink(key, source, isTopLevel, elementType, sortOptions, baseSortOptions, tableColumns, defaultTableColumns, viewModes) %}
     {{ tag('a', {
         role: 'button',
         tabindex: '0',
@@ -13,12 +13,12 @@
             'has-structure': (source.structureId ?? null)|boolean,
             'default-sort': source.defaultSort ?? false,
             'sort-opts': isTopLevel
-                ? baseSortOptions
+                ? sortOptions ?? (baseSortOptions
                     |merge(craft.app.elementSources.getSourceSortOptions(elementType, key)|map(option => {
                         label: option.label,
                         attr: option.attribute ?? option.orderBy,
                         defaultDir: option.defaultDir ?? 'asc'
-                    })|values)
+                    })|values))
                 : false,
             'source-item': true,
             'table-col-opts': isTopLevel
@@ -101,7 +101,7 @@
                     (source.disabled ?? false) ? 'hidden' : null,
                 ]|filter,
             } %}
-                {{ _self.sourceLink(key, source, isTopLevel, elementType, baseSortOptions ?? null, tableColumns ?? null, defaultTableColumns ?? null, viewModes ?? null) }}
+                {{ _self.sourceLink(key, source, isTopLevel, elementType, sortOptions ?? null, baseSortOptions ?? null, tableColumns ?? null, defaultTableColumns ?? null, viewModes ?? null) }}
                 {% if source.nested is defined and source.nested is not empty %}
                     <button class="toggle" aria-expanded="false" aria-label="{{ 'Show nested sources'|t('app') }}"></button>
                     {% include "_elements/sources" with {

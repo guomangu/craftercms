@@ -16,6 +16,8 @@
 
 <div class="container mt-4 mb-5"> {# Conteneur principal avec marges verticales #}
 
+<p>Club:</p>
+
     {# --- Section Détail de l'Action Principale --- #}
     {# Récupération de l'action via l'ID 'number' #}
     {% set latestaction = craft.entries()
@@ -157,6 +159,18 @@
             </div>
         </div>
 
+    <div class="container">
+        {# {% include "l.twig" with {
+            act: latestaction,
+            dt: nextOccurrenceDate
+        } %} #}
+
+        {% include "q.twig" with {
+            action: latestaction,
+            dt: nextOccurrenceDate
+        } %}
+    </div>
+
         {# --- Section Articles Associés --- #}
     <div class="container"> {# Marges pour la section #}
         <h2 class="mt-5 mb-4">Articles Associés</h2> {# Titre pour la section des articles liés #}
@@ -206,7 +220,7 @@
                 {# ID unique pour le formulaire basé sur l'action parente #}
                 <form method="post" id="article-form-{{ latestaction.id }}" accept-charset="UTF-8" enctype="multipart/form-data">
                     {{ csrfInput() }}
-                    {{ actionInput('entries/save-entry') }}
+                    {{ actionInput('guest-entries/save') }}
                     {{ hiddenInput('sectionId', 8) }} {# ID de la section 'article' #}
                     {{ hiddenInput('enabled', '1') }}
                     {# Champ caché liant ce nouvel article à l'action actuelle #}
@@ -249,4 +263,11 @@
     {% endif %} {# Fin du if latestaction #}
 
 </div> {# Fin container #}
+
+<hr>
+
+{% include "z.twig" with {
+    act: latestaction,
+    dt: nextOccurrenceDate
+} %}
 {% endblock %}

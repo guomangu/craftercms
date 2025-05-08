@@ -13,6 +13,7 @@ use craft\elements\db\ElementQueryInterface;
 use craft\enums\AttributeStatus;
 use craft\events\DefineFieldHtmlEvent;
 use craft\events\DefineFieldKeywordsEvent;
+use craft\events\DefineMenuItemsEvent;
 use craft\events\FieldElementEvent;
 use craft\events\FieldEvent;
 use craft\gql\types\QueryArgument;
@@ -130,6 +131,13 @@ abstract class Field extends SavableComponent implements FieldInterface, Iconic,
     public const EVENT_DEFINE_INPUT_HTML = 'defineInputHtml';
 
     /**
+     * @vevent DefineMenuItemsEvent
+     * @since 5.7.0
+     */
+    public const EVENT_DEFINE_ACTION_MENU_ITEMS = 'defineActionMenuItems';
+
+
+    /**
      * @event FieldEvent The event that is triggered after the field has been merged into another.
      * @see afterMergeInto()
      * @since 5.3.0
@@ -235,11 +243,11 @@ abstract class Field extends SavableComponent implements FieldInterface, Iconic,
             return false;
         }
 
+        $caseInsensitive = false;
+
         if (is_array($value) && isset($value['value'])) {
-            $caseInsensitive = $value['caseInsensitive'] ?? false;
+            $caseInsensitive = $value['caseInsensitive'] ?? $caseInsensitive;
             $value = $value['value'];
-        } else {
-            $caseInsensitive = false;
         }
 
         return Db::parseParam($valueSql, $value, caseInsensitive: $caseInsensitive, columnType: Schema::TYPE_JSON);
@@ -342,6 +350,7 @@ abstract class Field extends SavableComponent implements FieldInterface, Iconic,
         $names = parent::attributes();
         ArrayHelper::removeValue($names, 'validateHandleUniqueness');
         ArrayHelper::removeValue($names, 'layoutElement');
+        ArrayHelper::removeValue($names, 'static');
         return $names;
     }
 
@@ -421,14 +430,12 @@ abstract class Field extends SavableComponent implements FieldInterface, Iconic,
                 'localized',
                 'localized',
                 'mergingCanonicalChanges',
-                'name', // global set-specific
                 'newSiteIds',
                 'next',
                 'nextSibling',
                 'owner',
                 'parent',
                 'parents',
-                'postDate', // entry-specific
                 'prev',
                 'prevSibling',
                 'previewing',
@@ -445,6 +452,7 @@ abstract class Field extends SavableComponent implements FieldInterface, Iconic,
                 'rgt',
                 'root',
                 'scenario',
+                'searchKeywords',
                 'searchScore',
                 'siblings',
                 'site',
@@ -461,7 +469,6 @@ abstract class Field extends SavableComponent implements FieldInterface, Iconic,
                 'updatingFromDerivative',
                 'uri',
                 'url',
-                'username', // user-specific
                 'viewMode',
             ],
         ];
@@ -525,13 +532,32 @@ abstract class Field extends SavableComponent implements FieldInterface, Iconic,
      */
     public function getCpEditUrl(): ?string
     {
-        return $this->id ? UrlHelper::cpUrl("settings/fields/edit/$this->id") : null;
+        if (!$this->id || !Craft::$app->getUser()->getIsAdmin()) {
+            return null;
+        }
+        return UrlHelper::cpUrl("settings/fields/edit/$this->id");
     }
 
     /**
      * @inheritdoc
      */
     public function getActionMenuItems(): array
+    {
+        $items = $this->actionMenuItems();
+
+        // Fire a 'defineActionMenuItems' event
+        if ($this->hasEventHandlers(self::EVENT_DEFINE_ACTION_MENU_ITEMS)) {
+            $event = new DefineMenuItemsEvent([
+                'items' => $items,
+            ]);
+            $this->trigger(self::EVENT_DEFINE_ACTION_MENU_ITEMS, $event);
+            return $event->items;
+        }
+
+        return $items;
+    }
+
+    protected function actionMenuItems(): array
     {
         $items = [];
         $userSessionService = Craft::$app->getUser();
@@ -949,10 +975,23 @@ JS, [
 
         // Only DateTime objects and ISO-8601 strings should automatically be detected as dates
         if ($value instanceof DateTime || DateTimeHelper::isIso8601($value)) {
-            return Db::prepareDateForDb($value);
+            return DateTimeHelper::toIso8601($value);
         }
 
         return $value;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function serializeValueForDb(mixed $value, ElementInterface $element): mixed
+    {
+        // Dates should be stored in UTC w/o the time zone
+        if ($value instanceof DateTime || DateTimeHelper::isIso8601($value)) {
+            return Db::prepareDateForDb($value);
+        }
+
+        return $this->serializeValue($value, $element);
     }
 
     /**

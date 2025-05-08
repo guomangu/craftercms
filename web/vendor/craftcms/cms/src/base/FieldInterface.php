@@ -419,9 +419,8 @@ interface FieldInterface extends SavableComponentInterface, Chippable, Grippable
     public function normalizeValueFromRequest(mixed $value, ?ElementInterface $element): mixed;
 
     /**
-     * Prepares the field’s value to be stored somewhere, like the content table.
+     * Serializes the field’s value into a transportable format (either a scalar value or array of scalar values).
      *
-     * Data types that are JSON-encodable are safe (arrays, integers, strings, booleans, etc).
      * Whatever this returns should be something [[normalizeValue()]] can handle.
      *
      * @param mixed $value The raw field value
@@ -429,6 +428,19 @@ interface FieldInterface extends SavableComponentInterface, Chippable, Grippable
      * @return mixed The serialized field value
      */
     public function serializeValue(mixed $value, ?ElementInterface $element): mixed;
+
+    /**
+     * Serializes the field’s value into a transportable format (either a scalar value or array of scalar values),
+     * for database storage.
+     *
+     * Whatever this returns should be something [[normalizeValue()]] can handle.
+     *
+     * @param mixed $value
+     * @param ElementInterface $element
+     * @return mixed
+     * @since 5.7.0
+     */
+    public function serializeValueForDb(mixed $value, ElementInterface $element): mixed;
 
     /**
      * Copies the field’s value from one element to another.

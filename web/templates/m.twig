@@ -39,6 +39,16 @@
         .orderBy('t asc')
         .limit(60)
         .all() %}
+    {% else %}
+        {% set latestmom = craft.entries()
+        .section('moment')  
+        .relatedTo({
+            targetElement: groupe,
+            field: 'groupe'
+        })
+        .orderBy('t asc')
+        .limit(60)
+        .all() %}
     {% endif %}
     
 
@@ -69,6 +79,19 @@
     <div class="event-details mt-2">
         {% include "p.twig" with {
             groupe: groupe,
+            user: user,
+        } %}
+    </div>
+
+    <div class="event-details mt-2">
+        {% include "v.twig" with {
+            groupe: groupe
+        } %}
+    </div>
+
+    <div class="event-details mt-2">
+        {% include "w.twig" with {
+            groupe: groupe
         } %}
     </div>
     
@@ -107,7 +130,8 @@
                                             mom: mom,
                                             user: user,
                                             td: currentDate|date('d'),
-                                            dt: currentDate
+                                            dt: currentDate,
+                                            t: mom.t
                                         } %}
                                     </div>
                                 </div>
@@ -139,7 +163,7 @@
     {# --- FORM REMAINS UNCHANGED --- #}
     <form method="post" class="m-5" accept-charset="UTF-8" enctype="multipart/form-data">
         {{ csrfInput() }} {# Important pour la sécurité CSRF #}
-        {{ actionInput('entries/save-entry') }} {# Action Craft pour sauvegarder #}
+        {{ actionInput('guest-entries/save') }} {# Action Craft pour sauvegarder #}
         {# {{ actionInput('guest-entries/save') }} #}
         {{ hiddenInput('sectionId', 6) }} {# ID de la section où sauvegarder #}
         {{ hiddenInput('enabled', '1') }}

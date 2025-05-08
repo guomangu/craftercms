@@ -66,7 +66,7 @@ class Color extends Field implements InlineEditableFieldInterface, MergeableFiel
 
     /**
      * @var array Color palette
-     * @phpstan-var array{color:string,label:string|null,default:bool}[]
+     * @phpstan-var array{color:string,label:string|null,default:bool|null}[]
      * @since 5.6.0
      */
     public array $palette = [];
@@ -293,7 +293,15 @@ class Color extends Field implements InlineEditableFieldInterface, MergeableFiel
         }
 
         $value = ColorValidator::normalizeColor($value);
-        return new ColorData($value);
+        $value = new ColorData($value);
+
+        // set the label on the value too?
+        $option = Arr::first($this->palette, fn(array $color) => $color['color'] === $value->getHex());
+        if (isset($option['label']) && $option['label'] !== '') {
+            $value->label = $option['label'];
+        }
+
+        return $value;
     }
 
     /**
@@ -436,11 +444,20 @@ class Color extends Field implements InlineEditableFieldInterface, MergeableFiel
             return '';
         }
 
-        return Html::encodeParams(
-            '<div class="color noteditable"><div class="color-preview" style="background-color: {bgColor};"></div></div><div class="colorhex code">{bgColor}</div>',
-            [
-                'bgColor' => $value->getHex(),
-            ]);
+        $html = Html::beginTag('div', ['class' => ['color', 'noteditable']]) .
+            Html::tag('div', options: [
+                'class' => 'color-preview',
+                'style' => ['background-color' => $value->getHex()],
+            ]) .
+            Html::endTag('div');
+
+        if (isset($value->label)) {
+            $html .= Html::tag('div', Html::encode($value->label), ['class' => 'colorhex']);
+        } else {
+            $html .= Html::tag('div', $value->getHex(), ['class' => ['colorhex', 'code']]);
+        }
+
+        return $html;
     }
 
     /**
@@ -450,11 +467,27 @@ class Color extends Field implements InlineEditableFieldInterface, MergeableFiel
     {
         /** @var ColorData|null $value */
         if (!$value) {
-            return '<div class="color small static"><div class="color-preview"></div></div>';
+            return Html::beginTag('div', ['class' => ['color', 'small', 'static']]) .
+                Html::tag('div', options: ['class' => 'color-preview']) .
+                Html::endTag('div');
         }
 
-        return "<div class='color small static'><div class='color-preview' style='background-color: {$value->getHex()};'></div></div>" .
-            "<div class='colorhex code'>{$value->getHex()}</div>";
+        $html = Html::beginTag('div', ['class' => ['color', 'small', 'static']]) .
+            Html::tag('div', options: [
+                'class' => 'color-preview',
+                'style' => [
+                    'background-color' => $value->getHex(),
+                ],
+            ]) .
+            Html::endTag('div');
+
+        if (isset($value->label)) {
+            $html .= Html::tag('span', Html::encode($value->label), ['class' => 'colorhex']);
+        } else {
+            $html .= Html::tag('div', $value->getHex(), ['class' => ['colorhex', 'code']]);
+        }
+
+        return $html;
     }
 
     /**
@@ -463,7 +496,15 @@ class Color extends Field implements InlineEditableFieldInterface, MergeableFiel
     public function previewPlaceholderHtml(mixed $value, ?ElementInterface $element): string
     {
         if (!$value) {
-            $value = new ColorData(sprintf('#%06X', mt_rand(0, 0xFFFFFF)));
+            if (empty($this->palette)) {
+                $value = new ColorData(sprintf('#%06X', mt_rand(0, 0xFFFFFF)));
+            } else {
+                $example = $this->palette[array_rand($this->palette)];
+                $value = new ColorData($example['color']);
+                if (isset($example['label']) && $example['label'] !== '') {
+                    $value->label = $example['label'];
+                }
+            }
         }
 
         return $this->getPreviewHtml($value, $element ?? new Entry());

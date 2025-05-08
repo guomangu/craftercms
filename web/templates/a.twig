@@ -10,6 +10,16 @@
         .limit(10)
         .all() %}
 
+{% set lactivite = craft.entries()
+    .section('activite')
+    .relatedTo({
+        targetElement: latestaction,
+        field: 'action'
+    })
+    .d(dt|date('Y-m-d'))
+    .t(t)
+    .one() %}
+
     <div class="related-actions"> {# Marge inférieure réduite #}
         {# Utilisation d'un titre plus petit, adapté à l'inclusion dans une carte #}
         {# <h6 class="mb-2">Actions Associées :</h6> #}
@@ -27,17 +37,16 @@
                 {% for action in latestaction %}
                     {% set image = action.img.one() %}
                     {# Essayez de récupérer une URL pour l'action, adaptez 'action.url' à votre structure de données #}
-                    {% set actionUrl = "/b/" ~ action.id ?? null %} 
-                    {% set Tag = actionUrl ? 'a' : 'div' %} {# La carte sera un lien 'a' si actionUrl existe, sinon une 'div' #}
-
+                    {% if lactivite %}
+                        {% set actionUrl = "/n/" ~ lactivite.id ?? null %} 
+                    {% elseif action.id %}
+                        {% set actionUrl = "/b/" ~ action.id ?? null %} 
+                    {% endif %}
                     {# Carte Bootstrap horizontale #}
-                    <{{ Tag }} 
-                        {% if actionUrl %}href="{{ actionUrl }}"{% endif %} 
-                        class="card border-danger mb-3 overflow-hidden {% if actionUrl %}text-decoration-none{% endif %}" {# mb-3 pour l'espacement, overflow pour les coins arrondis, pas de soulignement si lien #}
-                    >
+                    <div class="card  overflow-hidden">
                         <div class="row g-0">
                             {# Colonne pour l'image (taille fixe ou proportionnelle) #}
-                            <div class="col-3 col-sm-2 d-flex align-items-center justify-content-center" style="max-height: 100px;"> {# Ajustez col-* et max-height si besoin #}
+                            <a class="col-3 col-sm-2 d-flex align-items-center justify-content-center" href="{{ actionUrl }}"> {# Ajustez col-* et max-height si besoin #}
                                 {% if image %}
                                     <img src="{{ image.getUrl({width: 120, height: 120, mode: 'crop', quality: 75}) }}" {# Taille image source légèrement plus grande, qualité ajustée #}
                                         alt="{{ image.alt ?? image.title ?? action.title }}"
@@ -52,43 +61,81 @@
                                     </svg>
                                     </div>
                                 {% endif %}
-                            </div>
+                            </a>
 
                             {# Colonne pour le contenu texte #}
                             <div class="col-9 col-sm-10"> {# Prend le reste de l'espace #}
                                 <div class="card-body py-2 px-3"> {# Padding vertical réduit, horizontal standard #}
+
+                                    {% if mom.l %}
                                     
+                                    <p class="card-text mb-0">
+                                        <small class="text-muted">
+                                            club du {{ dt|date("l") }} :
+                                            {% include "j.twig" with {
+                                                act: action,
+                                                user: user,
+                                                dt: currentDate,
+                                                i: inscrit|length
+                                            } %}
+                                        </small>
+                                    </p>
+
+                                    {% elseif mom.d %}
+                                        
+                                    <p class="card-text mb-0">
+                                        <small class="text-muted">
+                                            club du {{ dt|date("d") }} : 
+
+                                            {% include "j.twig" with {
+                                                act: action,
+                                                user: user,
+                                                dt: currentDate,
+                                                i: inscrit|length
+                                            } %}
+                                        </small>
+                                    </p>
+
+                                    {% endif %}
+
                                     {# Titre de l'action #}
                                     <h6 class="card-title mb-1"><strong>{{ action.title }}</strong></h6>
                                     
                                     {# Informations secondaires (Ville, Zone) #}
                                     <p class="card-text mb-0">
                                         <small class="text-muted">
-                                            {{ action.city }} - {{ action.zone }}
+                                            {{ action.city }}
                                             {# Vous pourriez ajouter une date ici aussi #}
                                             {# {% if action.date %} - {{ action.date|date("d/m/Y") }} {% endif %} #}
                                         </small>
                                     </p>
 
-                                    {% set inscrit = craft.entries()
-                                    .section('inscrit')
-                                    .relatedTo({
-                                        targetElement: action,
-                                        field: 'action'
-                                    })
-                                    .dt(dt|date('Y-m-d'))
-                                    .limit(27)
-                                    .all() %}
+                                    {# {% include "j.twig" with {
+                                        act: action,
+                                        user: user,
+                                        dt: currentDate,
+                                        i: inscrit|length
+                                    } %}  #}
+
+                                     <hr>
 
                                     <p class="card-text mb-0">
                                         <small class="text-muted">
-                                            {{ inscrit|length }} inscrits
+                                            activité :
                                         </small>
                                     </p>
+
+                                    {% include "k.twig" with {
+                                        action: action,
+                                        user: user,
+                                        dt: dt,
+                                        t: t
+                                    } %}
                                 </div>
                             </div>
                         </div>
-                    </{{ Tag }}>
+                    </div>
+                    <br> {# Saut de ligne pour espacer les cartes #}
 
                 {% else %}
                     {# Message si la liste est vide #}
@@ -118,7 +165,7 @@
 
     <form method="post" id="action-form-{{ mom.id }}-{{ td }}" class="add-action-form collapse" accept-charset="UTF-8" enctype="multipart/form-data">
         {{ csrfInput() }}
-        {{ actionInput('entries/save-entry') }}
+        {{ actionInput('guest-entries/save') }}
         {{ hiddenInput('sectionId', 7) }} {# Assurez-vous que 7 est le bon ID de section #}
         {{ hiddenInput('enabled', '1') }}
         {# Assurez-vous que 'mom' est disponible et a un 'id' #}

@@ -13,10 +13,12 @@ use craft\db\Table;
 use craft\elements\conditions\ElementConditionInterface;
 use craft\elements\conditions\tags\TagCondition;
 use craft\elements\db\TagQuery;
+use craft\gql\interfaces\elements\Tag as TagInterface;
 use craft\helpers\Db;
 use craft\models\FieldLayout;
 use craft\models\TagGroup;
 use craft\records\Tag as TagRecord;
+use GraphQL\Type\Definition\Type;
 use yii\base\InvalidConfigException;
 use yii\validators\InlineValidator;
 
@@ -137,6 +139,14 @@ class Tag extends Element
     public static function gqlTypeName(TagGroup $tagGroup): string
     {
         return sprintf('%s_Tag', $tagGroup->handle);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function baseGqlType(): Type
+    {
+        return TagInterface::getType();
     }
 
     /**

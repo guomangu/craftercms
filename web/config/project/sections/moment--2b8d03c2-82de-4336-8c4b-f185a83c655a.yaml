@@ -30,4 +30,9 @@ siteSettings:
     hasUrls: true
     template: moment/_entry.twig
     uriFormat: 'moment/{slug}'
+  d1c448cf-2bc2-42c7-95e7-4ce5a5e67575: # routine
+    enabledByDefault: true
+    hasUrls: false
+    template: null
+    uriFormat: null
 type: channel

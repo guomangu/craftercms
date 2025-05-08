@@ -1,6 +1,66 @@
 <?php
 
 return array(
+  0 =>
+  array(
+    'name' => ' 0 ',
+    'terms' => ' digit zero nada none zero zilch ',
+    'pro' => false,
+  ),
+  1 =>
+  array(
+    'name' => ' 1 ',
+    'terms' => ' digit one one ',
+    'pro' => false,
+  ),
+  2 =>
+  array(
+    'name' => ' 2 ',
+    'terms' => ' digit two two ',
+    'pro' => false,
+  ),
+  3 =>
+  array(
+    'name' => ' 3 ',
+    'terms' => ' digit three three ',
+    'pro' => false,
+  ),
+  4 =>
+  array(
+    'name' => ' 4 ',
+    'terms' => ' digit four four ',
+    'pro' => false,
+  ),
+  5 =>
+  array(
+    'name' => ' 5 ',
+    'terms' => ' digit five five ',
+    'pro' => false,
+  ),
+  6 =>
+  array(
+    'name' => ' 6 ',
+    'terms' => ' digit six six ',
+    'pro' => false,
+  ),
+  7 =>
+  array(
+    'name' => ' 7 ',
+    'terms' => ' digit seven seven ',
+    'pro' => false,
+  ),
+  8 =>
+  array(
+    'name' => ' 8 ',
+    'terms' => ' digit eight eight ',
+    'pro' => false,
+  ),
+  9 =>
+  array(
+    'name' => ' 9 ',
+    'terms' => ' digit nine nine ',
+    'pro' => false,
+  ),
   'a' =>
   array(
     'name' => ' a ',
@@ -337,6 +397,12 @@ return array(
     'terms' => ' dungeons dragons barbarian d d dnd fantasy gimli lumberjack melee attack ',
     'pro' => true,
   ),
+  'b' =>
+  array(
+    'name' => ' b ',
+    'terms' => ' latin capital letter b latin small letter b letter ',
+    'pro' => false,
+  ),
   'baby' =>
   array(
     'name' => ' baby ',
@@ -637,6 +703,12 @@ return array(
     'terms' => ' block brick mystery prize question super mario ',
     'pro' => true,
   ),
+  'bluesky' =>
+  array(
+    'name' => ' bluesky ',
+    'terms' => ' social network ',
+    'pro' => false,
+  ),
   'bluetooth' =>
   array(
     'name' => ' bluetooth ',
@@ -702,6 +774,78 @@ return array(
     'name' => ' boot heeled ',
     'terms' => ' boot clothing cowboy cowgirl knee high shoe woman womans boot ',
     'pro' => true,
+  ),
+  'border-all' =>
+  array(
+    'name' => ' border all ',
+    'terms' => ' cell grid outline stroke table ',
+    'pro' => false,
+  ),
+  'border-bottom' =>
+  array(
+    'name' => ' border bottom ',
+    'terms' => ' cell grid outline stroke table ',
+    'pro' => true,
+  ),
+  'border-bottom-right' =>
+  array(
+    'name' => ' border bottom right ',
+    'terms' => ' cell grid outline stroke table ',
+    'pro' => true,
+  ),
+  'border-center-h' =>
+  array(
+    'name' => ' border center h ',
+    'terms' => ' cell grid outline stroke table ',
+    'pro' => true,
+  ),
+  'border-center-v' =>
+  array(
+    'name' => ' border center v ',
+    'terms' => ' cell grid outline stroke table ',
+    'pro' => true,
+  ),
+  'border-inner' =>
+  array(
+    'name' => ' border inner ',
+    'terms' => ' cell grid outline stroke table ',
+    'pro' => true,
+  ),
+  'border-left' =>
+  array(
+    'name' => ' border left ',
+    'terms' => ' cell grid outline stroke table ',
+    'pro' => true,
+  ),
+  'border-none' =>
+  array(
+    'name' => ' border none ',
+    'terms' => ' cell grid outline stroke table ',
+    'pro' => false,
+  ),
+  'border-outer' =>
+  array(
+    'name' => ' border outer ',
+    'terms' => ' cell grid outline stroke table ',
+    'pro' => true,
+  ),
+  'border-right' =>
+  array(
+    'name' => ' border right ',
+    'terms' => ' cell grid outline stroke table ',
+    'pro' => true,
+  ),
+  'border-top' =>
+  array(
+    'name' => ' border top ',
+    'terms' => ' cell grid outline stroke table ',
+    'pro' => true,
+  ),
+  'border-top-left' =>
+  array(
+    'name' => ' border top left ',
+    'terms' => ' cell outline stroke table ',
+    'pro' => false,
   ),
   'bottle-droplet' =>
   array(
@@ -810,6 +954,12 @@ return array(
     'name' => ' briefcase medical ',
     'terms' => ' doctor emt first aid health ',
     'pro' => false,
+  ),
+  'bring-forward' =>
+  array(
+    'name' => ' bring forward ',
+    'terms' => ' arrange front layer order stack ',
+    'pro' => true,
   ),
   'broccoli' =>
   array(
@@ -924,6 +1074,12 @@ return array(
     'name' => ' butter ',
     'terms' => ' butter dairy margarine spread ',
     'pro' => true,
+  ),
+  'c' =>
+  array(
+    'name' => ' c ',
+    'terms' => ' latin capital letter c latin small letter c letter ',
+    'pro' => false,
   ),
   'cabin' =>
   array(
@@ -1849,6 +2005,12 @@ return array(
     'terms' => ' caramel custard dessert sweet ',
     'pro' => true,
   ),
+  'd' =>
+  array(
+    'name' => ' d ',
+    'terms' => ' latin capital letter d latin small letter d letter ',
+    'pro' => false,
+  ),
   'dagger' =>
   array(
     'name' => ' dagger ',
@@ -1980,6 +2142,18 @@ return array(
     'name' => ' display ',
     'terms' => ' screen computer desktop imac ',
     'pro' => false,
+  ),
+  'distribute-spacing-horizontal' =>
+  array(
+    'name' => ' distribute spacing horizontal ',
+    'terms' => ' align line padding rectangle spacing ',
+    'pro' => true,
+  ),
+  'distribute-spacing-vertical' =>
+  array(
+    'name' => ' distribute spacing vertical ',
+    'terms' => ' align line padding rectangle spacing ',
+    'pro' => true,
   ),
   'dna' =>
   array(
@@ -2141,6 +2315,12 @@ return array(
   array(
     'name' => ' dungeon ',
     'terms' => ' dungeons dragons building d d dnd door entrance fantasy gate ',
+    'pro' => false,
+  ),
+  'e' =>
+  array(
+    'name' => ' e ',
+    'terms' => ' latin capital letter e latin small letter e letter ',
     'pro' => false,
   ),
   'ear' =>
@@ -2310,6 +2490,12 @@ return array(
     'name' => ' eyes ',
     'terms' => ' eye idea look see ',
     'pro' => true,
+  ),
+  'f' =>
+  array(
+    'name' => ' f ',
+    'terms' => ' latin capital letter f latin small letter f letter ',
+    'pro' => false,
   ),
   'face-angry' =>
   array(
@@ -3223,6 +3409,12 @@ return array(
     'terms' => ' arepa flatbread lavash naan pita ',
     'pro' => true,
   ),
+  'flickr' =>
+  array(
+    'name' => ' flickr ',
+    'terms' => '  ',
+    'pro' => false,
+  ),
   'floppy-disk' =>
   array(
     'name' => ' floppy disk ',
@@ -3371,6 +3563,12 @@ return array(
   array(
     'name' => ' futbol ',
     'terms' => ' ball football mls soccer soccer ball ',
+    'pro' => false,
+  ),
+  'g' =>
+  array(
+    'name' => ' g ',
+    'terms' => ' latin capital letter g latin small letter g letter ',
     'pro' => false,
   ),
   'galaxy' =>
@@ -3636,6 +3834,12 @@ return array(
     'name' => ' gun squirt ',
     'terms' => ' firearm gun handgun pistol revolver super soaker tool water water pistol weapon ',
     'pro' => true,
+  ),
+  'h' =>
+  array(
+    'name' => ' h ',
+    'terms' => ' latin capital letter h latin small letter h letter ',
+    'pro' => false,
   ),
   'hammer' =>
   array(
@@ -4015,6 +4219,12 @@ return array(
     'terms' => ' coriolis effect eye storm tropical cyclone typhoon ',
     'pro' => false,
   ),
+  'i' =>
+  array(
+    'name' => ' i ',
+    'terms' => ' latin capital letter i latin small letter i letter ',
+    'pro' => false,
+  ),
   'i-cursor' =>
   array(
     'name' => ' i cursor ',
@@ -4171,6 +4381,12 @@ return array(
     'terms' => ' edit emphasis font format text type ',
     'pro' => false,
   ),
+  'j' =>
+  array(
+    'name' => ' j ',
+    'terms' => ' latin capital letter j latin small letter j letter ',
+    'pro' => false,
+  ),
   'jack-o-lantern' =>
   array(
     'name' => ' jack o lantern ',
@@ -4217,6 +4433,12 @@ return array(
   array(
     'name' => ' jug detergent ',
     'terms' => ' detergent laundry soap wash ',
+    'pro' => false,
+  ),
+  'k' =>
+  array(
+    'name' => ' k ',
+    'terms' => ' latin capital letter k latin small letter k letter ',
     'pro' => false,
   ),
   'kazoo' =>
@@ -4296,6 +4518,12 @@ return array(
     'name' => ' knife kitchen ',
     'terms' => ' chef cooking cut equipment halloween hocho kitchen knife knife sharp slice tool weapon ',
     'pro' => true,
+  ),
+  'l' =>
+  array(
+    'name' => ' l ',
+    'terms' => ' latin capital letter l latin small letter l letter ',
+    'pro' => false,
   ),
   'lacrosse-stick' =>
   array(
@@ -4579,6 +4807,12 @@ return array(
     'terms' => ' air breath covid 19 exhalation inhalation lungs organ respiration respiratory ',
     'pro' => false,
   ),
+  'm' =>
+  array(
+    'name' => ' m ',
+    'terms' => ' latin capital letter m latin small letter m letter ',
+    'pro' => false,
+  ),
   'mace' =>
   array(
     'name' => ' mace ',
@@ -4699,6 +4933,12 @@ return array(
     'terms' => ' art comedy mask perform performing performing arts theater theatre tragedy ',
     'pro' => false,
   ),
+  'mastodon' =>
+  array(
+    'name' => ' mastodon ',
+    'terms' => '  ',
+    'pro' => false,
+  ),
   'mattress-pillow' =>
   array(
     'name' => ' mattress pillow ',
@@ -4715,6 +4955,12 @@ return array(
   array(
     'name' => ' medal ',
     'terms' => ' award guarantee medal quality ribbon sports medal star trophy warranty ',
+    'pro' => false,
+  ),
+  'medium' =>
+  array(
+    'name' => ' medium ',
+    'terms' => '  ',
     'pro' => false,
   ),
   'megaphone' =>
@@ -4999,6 +5245,12 @@ return array(
     'terms' => ' beard face hair lumberjack shave walrus whiskers ',
     'pro' => true,
   ),
+  'n' =>
+  array(
+    'name' => ' n ',
+    'terms' => ' latin capital letter n latin small letter n letter nay no ',
+    'pro' => false,
+  ),
   'narwhal' =>
   array(
     'name' => ' narwhal ',
@@ -5045,6 +5297,48 @@ return array(
   array(
     'name' => ' notebook ',
     'terms' => ' daybook diary journal noteboo notebook notepad sketch ',
+    'pro' => true,
+  ),
+  'o' =>
+  array(
+    'name' => ' o ',
+    'terms' => ' latin capital letter o latin small letter o letter ',
+    'pro' => false,
+  ),
+  'objects-align-bottom' =>
+  array(
+    'name' => ' objects align bottom ',
+    'terms' => ' align distribute line rectangles ',
+    'pro' => true,
+  ),
+  'objects-align-center-horizontal' =>
+  array(
+    'name' => ' objects align center horizontal ',
+    'terms' => ' align distribute line rectangles ',
+    'pro' => true,
+  ),
+  'objects-align-center-vertical' =>
+  array(
+    'name' => ' objects align center vertical ',
+    'terms' => ' align distribute line rectangles ',
+    'pro' => true,
+  ),
+  'objects-align-left' =>
+  array(
+    'name' => ' objects align left ',
+    'terms' => ' align distribute line rectangles ',
+    'pro' => true,
+  ),
+  'objects-align-right' =>
+  array(
+    'name' => ' objects align right ',
+    'terms' => ' align distribute line rectangles ',
+    'pro' => true,
+  ),
+  'objects-align-top' =>
+  array(
+    'name' => ' objects align top ',
+    'terms' => ' align distribute line rectangles ',
     'pro' => true,
   ),
   'objects-column' =>
@@ -5124,6 +5418,12 @@ return array(
     'name' => ' oven ',
     'terms' => ' bake broiler convection cook kitchen stove ',
     'pro' => true,
+  ),
+  'p' =>
+  array(
+    'name' => ' p ',
+    'terms' => ' latin capital letter p latin small letter p letter ',
+    'pro' => false,
   ),
   'page' =>
   array(
@@ -5803,6 +6103,12 @@ return array(
     'terms' => ' add on addon clue game interlocking jigsaw piece puzzle puzzle piece section ',
     'pro' => false,
   ),
+  'q' =>
+  array(
+    'name' => ' q ',
+    'terms' => ' latin capital letter q latin small letter q letter ',
+    'pro' => false,
+  ),
   'qrcode' =>
   array(
     'name' => ' qrcode ',
@@ -5832,6 +6138,12 @@ return array(
     'name' => ' quotes ',
     'terms' => ' cite quotation quote ',
     'pro' => true,
+  ),
+  'r' =>
+  array(
+    'name' => ' r ',
+    'terms' => ' latin capital letter r latin small letter r letter ',
+    'pro' => false,
   ),
   'rabbit' =>
   array(
@@ -6121,6 +6433,12 @@ return array(
     'terms' => ' camping cousin eddie recreational travel vehicle ',
     'pro' => true,
   ),
+  's' =>
+  array(
+    'name' => ' s ',
+    'terms' => ' latin capital letter s latin small letter s letter ',
+    'pro' => false,
+  ),
   'sack' =>
   array(
     'name' => ' sack ',
@@ -6294,6 +6612,12 @@ return array(
     'name' => ' seedling ',
     'terms' => ' environment flora grow investment plant sapling seedling vegan young ',
     'pro' => false,
+  ),
+  'send-backward' =>
+  array(
+    'name' => ' send backward ',
+    'terms' => ' arrange back layer order stack ',
+    'pro' => true,
   ),
   'sensor' =>
   array(
@@ -7069,6 +7393,12 @@ return array(
     'terms' => ' covid 19 doctor immunizations medical medicine needle shot sick syringe vaccinate vaccine ',
     'pro' => false,
   ),
+  't' =>
+  array(
+    'name' => ' t ',
+    'terms' => ' latin capital letter t latin small letter t letter ',
+    'pro' => false,
+  ),
   't-rex' =>
   array(
     'name' => ' t rex ',
@@ -7681,6 +8011,12 @@ return array(
     'terms' => ' keyboard letterpress movable type newspaper novel retro typing vintage writing ',
     'pro' => true,
   ),
+  'u' =>
+  array(
+    'name' => ' u ',
+    'terms' => ' latin capital letter u latin small letter u letter ',
+    'pro' => false,
+  ),
   'ufo' =>
   array(
     'name' => ' ufo ',
@@ -7945,6 +8281,12 @@ return array(
     'terms' => ' phone power transmission ',
     'pro' => true,
   ),
+  'v' =>
+  array(
+    'name' => ' v ',
+    'terms' => ' latin capital letter v latin small letter v letter ',
+    'pro' => false,
+  ),
   'vacuum' =>
   array(
     'name' => ' vacuum ',
@@ -8063,6 +8405,12 @@ return array(
   array(
     'name' => ' volume off ',
     'terms' => ' audio ban music mute quiet silent sound ',
+    'pro' => false,
+  ),
+  'w' =>
+  array(
+    'name' => ' w ',
+    'terms' => ' latin capital letter w latin small letter w letter ',
     'pro' => false,
   ),
   'waffle' =>
@@ -8305,6 +8653,12 @@ return array(
     'terms' => ' configuration construction equipment fix mechanic modify plumbing settings spanner tool update wrench ',
     'pro' => false,
   ),
+  'x' =>
+  array(
+    'name' => ' x ',
+    'terms' => ' latin capital letter x latin small letter x letter uncheck ',
+    'pro' => false,
+  ),
   'x-ray' =>
   array(
     'name' => ' x ray ',
@@ -8329,6 +8683,12 @@ return array(
     'terms' => ' cancellation x multiplication sign multiplication x cancel close cross cross mark error exit incorrect mark multiplication multiply notice notification notify problem sign uncheck wrong x ',
     'pro' => false,
   ),
+  'y' =>
+  array(
+    'name' => ' y ',
+    'terms' => ' latin capital letter y latin small letter y letter yay yes ',
+    'pro' => false,
+  ),
   'yin-yang' =>
   array(
     'name' => ' yin yang ',
@@ -8339,6 +8699,12 @@ return array(
   array(
     'name' => ' youtube ',
     'terms' => ' film video youtube play youtube square ',
+    'pro' => false,
+  ),
+  'z' =>
+  array(
+    'name' => ' z ',
+    'terms' => ' latin capital letter z latin small letter z letter ',
     'pro' => false,
   ),
 );

@@ -15,6 +15,9 @@
             (selected ? 'sel'),
         ],
         target: external ? '_blank',
+        aria: {
+            label: item.ariaLabel ?? false,
+        },
     }|merge(item.linkAttributes ?? {}, recursive=true) %}
 
     {% tag 'a' with linkAttributes %}
@@ -109,7 +112,7 @@
                                                             current: itemIsSelected ? 'page' : false,
                                                         },
                                                     }
-                                                }), itemIsSelected, false, ) }}
+                                                }, recursive=true), itemIsSelected, false) }}
                                             </div>
                                         </li>
                                     {% endfor %}

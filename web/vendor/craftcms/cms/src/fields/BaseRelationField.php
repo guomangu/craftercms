@@ -40,6 +40,7 @@ use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
 use craft\helpers\Db;
 use craft\helpers\ElementHelper;
+use craft\helpers\Html;
 use craft\helpers\Queue;
 use craft\helpers\StringHelper;
 use craft\queue\jobs\LocalizeRelations;
@@ -73,6 +74,11 @@ abstract class BaseRelationField extends Field implements
      * @since 3.4.16
      */
     public const EVENT_DEFINE_SELECTION_CRITERIA = 'defineSelectionCriteria';
+
+    /** @since 5.7.0 */
+    public const DEFAULT_PLACEMENT_BEGINNING = 'beginning';
+    /** @since 5.7.0 */
+    public const DEFAULT_PLACEMENT_END = 'end';
 
     private static bool $validatingRelatedElements = false;
 
@@ -236,6 +242,13 @@ abstract class BaseRelationField extends Field implements
      * @since 4.4.0
      */
     public ?int $branchLimit = null;
+
+    /**
+     * @var string Default placement
+     * @phpstan-var self::DEFAULT_PLACEMENT_*
+     * @since 5.7.0
+     */
+    public string $defaultPlacement = self::DEFAULT_PLACEMENT_END;
 
     /**
      * @var string|null The view mode
@@ -452,6 +465,7 @@ abstract class BaseRelationField extends Field implements
         $attributes[] = 'sources';
         $attributes[] = 'targetSiteId';
         $attributes[] = 'validateRelatedElements';
+        $attributes[] = 'defaultPlacement';
         $attributes[] = 'viewMode';
         $attributes[] = 'showCardsInGrid';
         $attributes[] = 'allowSelfRelations';
@@ -501,6 +515,7 @@ JS, [
                     $view->namespaceInputId('branch-limit-field'),
                     $view->namespaceInputId('min-relations-field'),
                     $view->namespaceInputId('max-relations-field'),
+                    $view->namespaceInputId('default-placement-field'),
                     $view->namespaceInputId('viewMode-field'),
                 ],
         ]);
@@ -536,7 +551,7 @@ JS, [
             $value = $element->getFieldValue($this->handle);
 
             if ($value instanceof ElementQueryInterface) {
-                $value = $this->_all($value, $element);
+                $value = $this->_all($value, $element)->eagerly();
             }
 
             $arrayValidator = new NumberValidator([
@@ -578,7 +593,8 @@ JS, [
             $value
                 ->site('*')
                 ->unique()
-                ->preferSites([$this->targetSiteId($element)]);
+                ->preferSites([$this->targetSiteId($element)])
+                ->eagerly();
         }
 
         $errorCount = 0;
@@ -653,6 +669,7 @@ JS, [
             $value instanceof ElementQueryInterface &&
             $element?->propagating &&
             $element->isNewForSite &&
+            !$element->resaving &&
             !$element->isNewSite &&
             !$this->targetSiteId &&
             !$this->showSiteMenu
@@ -789,6 +806,12 @@ JS, [
      */
     public function serializeValue(mixed $value, ?ElementInterface $element): mixed
     {
+        if ($this->maintainHierarchy) {
+            // Enforce the “Maintain hierarchy” and “Branch Limit” settings
+            $value = $this->normalizeValueForInput($value, $element);
+            return array_map(fn(ElementInterface $element) => $element->id, $value);
+        }
+
         /** @var ElementQueryInterface|ElementCollection $value */
         if ($value instanceof ElementCollection) {
             return $value->ids()->all();
@@ -840,21 +863,7 @@ JS, [
      */
     protected function inputHtml(mixed $value, ?ElementInterface $element, bool $inline): string
     {
-        if ($element !== null && $element->hasEagerLoadedElements($this->handle)) {
-            $value = $element->getEagerLoadedElements($this->handle)->all();
-        } else {
-            $value = $this->_all($value, $element)->all();
-        }
-
-        if ($this->maintainHierarchy) {
-            $structuresService = Craft::$app->getStructures();
-            // Fill in any gaps
-            $structuresService->fillGapsInElements($value);
-            // Enforce the branch limit
-            if ($this->branchLimit) {
-                $structuresService->applyBranchLimitToElements($value, $this->branchLimit);
-            }
-        }
+        $value = $this->normalizeValueForInput($value, $element, $initialValue);
 
         /** @var ElementInterface[] $value */
         $variables = $this->inputTemplateVariables($value, $element);
@@ -864,7 +873,44 @@ JS, [
             $variables['viewMode'] = 'list';
         }
 
+        if ($initialValue !== null) {
+            // make sure the field gets updated on save, even if it hasn't changed
+            Craft::$app->getView()->setInitialDeltaValue($this->handle, $initialValue);
+        }
+
         return Craft::$app->getView()->renderTemplate($this->inputTemplate, $variables);
+    }
+
+    /**
+     * @param ElementQueryInterface|ElementCollection $value
+     * @param ElementInterface|null $element
+     * @param int[]|null $initialValue
+     * @return ElementInterface[]
+     */
+    private function normalizeValueForInput(mixed $value, ?ElementInterface $element, ?array &$initialValue = null): array
+    {
+        if ($element !== null && $element->hasEagerLoadedElements($this->handle)) {
+            $value = $element->getEagerLoadedElements($this->handle)->all();
+        } else {
+            $value = $this->_all($value, $element)->all();
+        }
+
+        if ($this->maintainHierarchy) {
+            $initialValue = array_map(fn(ElementInterface $element) => $element->id, $value);
+            $structuresService = Craft::$app->getStructures();
+            // Fill in any gaps
+            $structuresService->fillGapsInElements($value);
+            // Enforce the branch limit
+            if ($this->branchLimit) {
+                $structuresService->applyBranchLimitToElements($value, $this->branchLimit);
+            }
+
+            if (count($initialValue) === count($value)) {
+                $initialValue = null;
+            }
+        }
+
+        return $value;
     }
 
     /**
@@ -902,6 +948,18 @@ JS, [
 
         if (empty($value)) {
             return '<p class="light">' . Craft::t('app', 'Nothing selected.') . '</p>';
+        }
+
+        if ($this->maintainHierarchy) {
+            $structuresService = Craft::$app->getStructures();
+            // Fill in any gaps
+            $structuresService->fillGapsInElements($value);
+
+            return Html::beginTag('div', ['class' => 'elementselect']) .
+                Craft::$app->getView()->renderTemplate('_elements/structurelist.twig', [
+                    'elements' => $value,
+                ]) .
+                Html::endTag('div');
         }
 
         $size = Cp::CHIP_SIZE_SMALL;
@@ -1044,6 +1102,7 @@ JS, [
             $criteria['orderBy'] = ['structureelements.lft' => SORT_ASC];
         }
 
+        /** @phpstan-ignore-next-line */
         return [
             'elementType' => static::elementType(),
             'map' => $map,
@@ -1099,7 +1158,7 @@ JS, [
      */
     public function afterSave(bool $isNew): void
     {
-        // If the propagation method just changed, resave all the Matrix blocks
+        // If the propagation method just changed, resave all the elements
         if (isset($this->oldSettings)) {
             $oldLocalizeRelations = (bool)($this->oldSettings['localizeRelations'] ?? false);
             if ($this->localizeRelations !== $oldLocalizeRelations) {
@@ -1374,6 +1433,7 @@ JS, [
 
         return [
             'field' => $this,
+            'upperElementType' => $elementType::displayName(),
             'elementType' => $elementType::lowerDisplayName(),
             'pluralElementType' => $elementType::pluralLowerDisplayName(),
             'selectionCondition' => $selectionConditionHtml ?? null,
@@ -1390,11 +1450,12 @@ JS, [
     protected function inputTemplateVariables(array|ElementQueryInterface $value = null, ?ElementInterface $element = null): array
     {
         if ($value instanceof ElementQueryInterface) {
-            $value = $value->all();
-            ElementHelper::swapInProvisionalDrafts($value);
+            $value = $value->eagerly()->all();
         } elseif (!is_array($value)) {
             $value = [];
         }
+
+        ElementHelper::swapInProvisionalDrafts($value);
 
         if ($this->validateRelatedElements && $element !== null) {
             // Pre-validate related elements
@@ -1452,6 +1513,7 @@ JS, [
             'sourceElementId' => !empty($element->id) ? $element->id : null,
             'disabledElementIds' => $disabledElementIds,
             'limit' => $this->allowLimit ? $this->maxRelations : null,
+            'defaultPlacement' => $this->defaultPlacement,
             'viewMode' => $this->viewMode(),
             'showCardsInGrid' => $this->showCardsInGrid,
             'selectionLabel' => $this->selectionLabel ? Craft::t('site', $this->selectionLabel) : static::defaultSelectionLabel(),

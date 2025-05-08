@@ -127,9 +127,13 @@
                 </div> {# Fin Row (Grille de cartes) #}
             {% else %}
                 <div class="alert alert-info" role="alert">
-                  Vous n'êtes inscrit dans aucun agenda pour le moment.
+                  Vous ne possedez aucun agenda pour le moment.
                 </div>
             {% endif %}
+
+            {% include "h.twig" with {
+                user: user
+            } %}
 
             {# -- Section Formulaire de création -- #}
             <hr class="my-5"> {# Séparateur horizontal avec marge verticale #}
@@ -141,7 +145,7 @@
                         <div class="card-body p-4">
                             <form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
                                 {{ csrfInput() }}
-                                {{ actionInput('entries/save-entry') }}
+                                {{ actionInput('guest-entries/save') }}
                                 {{ hiddenInput('sectionId', 12) }} {# Assurez-vous que 12 est le bon ID #}
                                 {{ hiddenInput('enabled', '1') }}
                                 {# Assigner l'utilisateur courant comme admin ET inscrit initial #}

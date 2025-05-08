@@ -1,0 +1,19 @@
+{% block content %}
+
+{% set inscrit = craft.entries()
+.section('inscrit')
+.relatedTo({
+    targetElement: activ,
+    field: 'activite'
+})
+.limit(27)
+.all() %}
+
+
+<span>
+    <small class="text-muted">
+        {{ inscrit|length }} inscrits
+    </small>
+</span> 
+
+{% endblock %}

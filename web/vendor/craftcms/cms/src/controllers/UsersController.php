@@ -1137,9 +1137,10 @@ class UsersController extends Controller
         $response = $this->asEditUserScreen($user, self::SCREEN_ADDRESSES);
 
         $response->contentHtml(function() use ($user) {
+            $canEditUsers = Craft::$app->getUser()->checkPermission('editUsers');
             $config = [
                 'showInGrid' => true,
-                'canCreate' => Craft::$app->getUser()->checkPermission('editUsers'),
+                'canCreate' => $canEditUsers,
             ];
 
             // Use an element index view if there's more than 50 addresses
@@ -1318,7 +1319,6 @@ class UsersController extends Controller
             'language' => $this->request->getBodyParam('preferredLanguage', $user->getPreference('language')),
             'locale' => $preferredLocale,
             'weekStartDay' => $this->request->getBodyParam('weekStartDay', $user->getPreference('weekStartDay')),
-            'alwaysShowFocusRings' => (bool)$this->request->getBodyParam('alwaysShowFocusRings', $user->getPreference('alwaysShowFocusRings')),
             'useShapes' => (bool)$this->request->getBodyParam('useShapes', $user->getPreference('useShapes')),
             'underlineLinks' => (bool)$this->request->getBodyParam('underlineLinks', $user->getPreference('underlineLinks')),
             'disableAutofocus' => $this->request->getBodyParam('disableAutofocus', $user->getPreference('disableAutofocus')),
@@ -1441,6 +1441,7 @@ JS);
     {
         $this->getView()->registerAssetBundle(AuthMethodSetupAsset::class);
 
+        $this->response->setNoCacheHeaders();
         return $this->renderTemplate('_special/setup-2fa.twig', templateMode: View::TEMPLATE_MODE_CP);
     }
 

@@ -12,6 +12,7 @@ use craft\base\Utility;
 use craft\db\Table;
 use craft\events\RegisterCacheOptionsEvent;
 use craft\helpers\ArrayHelper;
+use craft\helpers\Db;
 use craft\helpers\FileHelper;
 use craft\web\assets\clearcaches\ClearCachesAsset;
 use Exception;
@@ -183,11 +184,14 @@ class ClearCaches extends Utility
                     }
 
                     $basePath = Craft::getAlias($basePath);
-                    if ($basePath !== false) {
+                    if ($basePath !== false && file_exists($basePath)) {
                         FileHelper::clearDirectory($basePath, [
                             'except' => ['.gitignore'],
                         ]);
                     }
+
+                    // truncate the resourcepaths table while we're at it
+                    Db::truncateTable(Table::RESOURCEPATHS);
                 },
             ],
             [
