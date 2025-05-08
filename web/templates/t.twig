@@ -8,9 +8,10 @@
 .limit(9)
 .all() %}
 
+<div style="place-self: center;">
 {% set groupess = [] %}
 {% for tag in latesttag %}
-    <span class="btn">{{tag.title}}</span>
+    <span class="btn btn-primary">{{tag.title}}</span>
 
     {% set liketag = craft.entries()
     .section('tag')
@@ -24,12 +25,11 @@
             {% set othergroupe = tagg.groupe %}
                 {% for g in othergroupe %}
                     {% set groupess = groupess|merge([g]) %}
-                    {# {% set groupess = g %} #}
                 {% endfor %}
         {% endfor %}
     {% endif %}
 {% endfor %}
-
+</div>
 {# <pre>
     {{ dump(groupess) }}
 </pre> #}
@@ -46,7 +46,7 @@
             {% set tempIdentifiers = tempIdentifiers|merge([identifier]) %}
         {% endif %}
     {% endfor %}
-    {{ uniqueArray|length }}
+    {# {{ uniqueArray|length }} #}
     {% set groupess = uniqueArray %}
 {% endif %}
 {# <pre>

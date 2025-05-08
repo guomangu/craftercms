@@ -1,5 +1,5 @@
 siteUid: null
-sortOrder: 5
+sortOrder: 1
 template: m.twig
 uriParts:
   - m/

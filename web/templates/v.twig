@@ -9,9 +9,9 @@
 .all() %}
 
 {% for tag in latesttag %}
-    <span class="btn">{{tag.title}}</span>
+    <span class="btn btn-outline-secondary">{{tag.title}}</span>
 
-    {% set liketag = craft.entries()
+    {# {% set liketag = craft.entries()
     .section('tag')
     .where(['like', 'title', tag.title])
     .where(['!=', 'id', tag.id])
@@ -29,7 +29,7 @@
                 {% endfor %}
         {% endfor %}
 
-    {% endif %}
+    {% endif %} #}
     
 {% endfor %}
 

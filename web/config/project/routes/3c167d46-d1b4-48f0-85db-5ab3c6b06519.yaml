@@ -1,5 +1,5 @@
 siteUid: null
-sortOrder: 1
+sortOrder: 6
 template: liste-voitures.twig
 uriParts:
   - voitures
