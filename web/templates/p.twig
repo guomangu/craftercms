@@ -5,10 +5,10 @@
 
 
 {% set abos = craft.entries()
-.section('abo')
+.section('inscrit')
 .relatedTo({
     targetElement: groupe,
-    field: 'groupe'
+    field: 'obj'
 })
 .limit(17)
 .all() %}
@@ -78,6 +78,11 @@
             <p class="mb-0 small" style="line-height: 1.2; overflow-wrap: break-word;"> {# Texte petit, marge bas nulle, hauteur de ligne réduite, gestion des mots longs #}
                 {{ abo.gens[0].title }}
             </p>
+            <p class="mb-0 small btn btn-outline-secondary" style="line-height: 1.2; overflow-wrap: break-word;"> {# Texte petit, marge bas nulle, hauteur de ligne réduite, gestion des mots longs #}
+                {{ abo.title }}
+
+                
+            </p>
 
         </div> {# Fin du bloc pour une personne #}
 
@@ -102,9 +107,9 @@
     {# {{ actionInpust('guest-entries/save') }} #}
     {{ actionInput('guest-entries/save') }}
     {{ hiddenInput('enabled', '1') }}
-    {{ hiddenInput('sectionId', 14) }}
-    <input type="hidden" name="fields[groupe][]" value="{{ groupe.id }}"> {# ID du groupe #}
-    <input type="hidden" name="fields[inviteur][]" value="{{ user.id }}">
+    {{ hiddenInput('sectionId', 13) }}
+    <input type="hidden" name="fields[obj][]" value="{{ groupe.id }}"> {# ID du groupe #}
+    {# <input type="hidden" name="fields[gens][]" value="{{ user.id }}"> #}
     {# 2. Ajouter un champ caché pour le groupe #}
 
 

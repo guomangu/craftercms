@@ -18,7 +18,7 @@
     {% set user = craft.entries().id(emailDepuisCookie).one() %}
 {% else %}
     {# L'utilisateur n'est pas connecté, afficher un message ou rediriger #}
-    <p><strong>Aucun utilisateur connecté.</strong></p>
+    {# <p><strong>Aucun utilisateur connecté.</strong></p> #}
     {% set user = craft.entries().id(257).one() %}
 {% endif %}
 
@@ -102,6 +102,17 @@
     </div>
     
     <hr>
+
+
+    <div class="">
+        {% include "d.twig" with {
+            obj: groupe,
+            user: user
+        } %}
+    </div>
+
+
+
     <div class="row row-cols-1"> {# Ajustez les colonnes selon vos préférences #}
         {% set currentDate = date_variable %}
         {% for i in 1..31 %} {# Attention: Ceci affiche toujours 31 jours. Idéalement, adaptez à la longueur du mois réel #}

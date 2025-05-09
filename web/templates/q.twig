@@ -15,6 +15,8 @@
 
 {% set moment = action.moment[0] %}
 
+{% set ttt = moment.t %}
+
 {% set d = moment.d %}
 {# l est un N #}
 {% set l = moment.l %} 
@@ -23,7 +25,8 @@
 
 
 {% if l %}
-    <h3>Activite du club {{ action.title }} du {{ dateLimite|date("l") }}</h3>
+    <h3>Activite du club du {{ dateLimite|date("l") }}
+    de {{ ttt }}h</h3>
     {% for ii in 0..5 %}
         <hr>
         <p class="btn">{{ dateLimite|date("l d F") }}</p>
@@ -44,9 +47,21 @@
             {{ ac.zone }}
             - {{ datetimeuuu|date("H:i") }}h
             </a>
-            {% include "x.twig" with {
-                activ: ac,
-            } %}
+
+
+
+            <div>
+                {% include "x.twig" with {
+                    activ: ac,
+                } %}
+
+                <div class="">
+                    {% include "d.twig" with {
+                        obj: ac,
+                        user: user
+                    } %}
+                </div>
+            </div>
             
         {% endfor %}
 
@@ -61,8 +76,10 @@
         {% set dateLimite = dateLimite|date_modify("+1 week") %}
     {% endfor %}
 {% else %}        
-     <h3>Activite du club {{ action.title }} du {{ dateLimite|date("d") }}</h3>
+     <h3>Activite du club du {{ dateLimite|date("d") }}
+     de {{ ttt }}h</h3>
     {% for ii in 0..3 %}
+        <hr>
         {{ dateLimite|date("l d F") }}
         {% set activ = latestactivites|filter(activite => activite.d == dateLimite|date('Y-m-d')) %}
         {% for ac in activ %}
@@ -79,12 +96,25 @@
             {% set datetimeuuu = date(date_avec_heure_chaine) %}
 
             {{ datetimeuuu|date("H:i") }}h
+
+            <div>
+                {% include "x.twig" with {
+                    activ: ac,
+                } %}
+
+                <div class="">
+                    {% include "d.twig" with {
+                        obj: ac,
+                        user: user
+                    } %}
+                </div>
+            </div>
         {% endfor %}
 
         {% include "r.twig" with {
             action: action,
             dd: dateLimite,
-            t: t
+            t: ttt
         } %}
 
         {% set dateLimite = dateLimite|date_modify("+1 month") %}

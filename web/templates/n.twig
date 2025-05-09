@@ -42,6 +42,13 @@
     {{activ.zone}}
     {{datetimeu|date("l d F")}}
     a {{datetimeu|date("H:i")}}h
+
+    <div class="">
+        {% include "d.twig" with {
+            obj: activ,
+            user: user
+        } %}
+    </div>
 </div>
 
 
