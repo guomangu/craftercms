@@ -19,8 +19,8 @@
     {# L'utilisateur est connecté, vous pouvez afficher ses informations #}
     {% set user = craft.entries().id(emailDepuisCookie).one() %}
 {% else %}
-    {# L'utilisateur n'est pas connecté, afficher un message ou rediriger #}
-    <p><strong>Aucun utilisateur connecté.</strong></p>
+     {% set user = craft.entries().id(257).one() %}
+    {# <p><strong>Aucun utilisateur connecté.</strong></p> #}
 {% endif %}
 
 
@@ -29,14 +29,14 @@
 .section('inscrit')
 .relatedTo({
     targetElement: act,
-    field: 'action'
+    field: 'obj'
 })
 .dt(dt|date('Y-m-d'))
 .limit(27)
 .all() %}
 
 {# -- Liste des Inscriptions -- #}
-    <h4 class="mb-3">Personnes déjà inscrites :</h4>
+    <h4 class="mb-3">Personnes déjà addherentes :</h4>
     {% if inscrit is defined and inscrit is not empty %}
         <ul class="list-group mb-4 shadow-sm">
             {% for i in inscrit %}
@@ -79,13 +79,35 @@
                         {% if i.title is defined and i.title is not empty %}
                             <small class="text-muted">{{ i.title }}</small>
                         {% endif %}
+
+                        <button class="btn btn-link" 
+                                type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#inscription-form-{{ i.id }}" 
+                                aria-expanded="false" 
+                                aria-controls="inscription-form-{{ i.id }}">
+                            {# Afficher/Masquer le formulaire d'inscription #}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-circle me-2" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                            </svg>
+                        </button>
+
+                        <div class="collapse" id="inscription-form-{{ i.id }}">
+                            {# Inclure le template d'inscription #}
+                            {# Assurez-vous que le chemin est correct et que le fichier existe #}
+                            {% include "d.twig" with {
+                                obj: i,
+                                user: user
+                            } %}
+                        </div>
                     </div>
                 </li>
             {% endfor %}
         </ul>
     {% else %}
         <div class="alert alert-light text-center" role="alert">
-            Personne n'est encore inscrit à cette action.
+            Personne n'est encore inscrit à ce Club.
         </div>
     {% endif %}
 
@@ -104,7 +126,7 @@
                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
             </svg>
             {# Utilisation de span au lieu de p #}
-            <span>S'inscrire à l'action</span> 
+            <span>S'inscrire au club</span> 
         </button>
     </div>
 
@@ -123,7 +145,7 @@
             
             {# Vérifier que les variables existent avant de les utiliser #}
             {% if act is defined and act.id is defined %}
-                 <input type="hidden" name="fields[action][]" value="{{ act.id }}">
+                 <input type="hidden" name="fields[obj][]" value="{{ act.id }}">
             {% else %}
                  {# Gérer l'erreur ou mettre une valeur par défaut si nécessaire #}
                  <p class="text-danger small">Erreur: ID de l'action manquant.</p> 

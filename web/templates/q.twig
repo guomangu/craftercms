@@ -29,7 +29,7 @@
     de {{ ttt }}h</h3>
     {% for ii in 0..5 %}
         <hr>
-        <p class="btn">{{ dateLimite|date("l d F") }}</p>
+        <p class="btn">{{ dateLimite|date("l d F") }} a - {{ ttt }}h</p>
         {% set activ = latestactivites|filter(activite => activite.d == dateLimite|date('Y-m-d')) %}
         {% for ac in activ %}
             
@@ -45,19 +45,27 @@
             <a class="btn btn-outline-secondary" href="/n/{{ ac.id }}">
             {{ ac.title }}
             {{ ac.zone }}
-            - {{ datetimeuuu|date("H:i") }}h
+
+            {% include "e.twig" with {
+                obj: ac,
+                user: user,
+                nooo: true
+            } %}
+
+            {% include "x.twig" with {
+                    activ: ac,
+                } %}
             </a>
 
 
 
             <div>
-                {% include "x.twig" with {
-                    activ: ac,
-                } %}
+                
 
                 <div class="">
                     {% include "d.twig" with {
                         obj: ac,
+                        ttt: ttt,
                         user: user
                     } %}
                 </div>
@@ -84,8 +92,14 @@
         {% set activ = latestactivites|filter(activite => activite.d == dateLimite|date('Y-m-d')) %}
         {% for ac in activ %}
             <a class="btn btn-outline-secondary" href="/n/{{ ac.id }}">
-            {{ ac.title }}
-            {{ ac.zone }}
+                {{ ac.title }}
+                {{ ac.zone }}
+
+                {% include "e.twig" with {
+                    obj: ac,
+                    user: user,
+                    nooo: true
+                } %}
             </a>
 
 

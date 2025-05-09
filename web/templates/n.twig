@@ -4,6 +4,24 @@
 <Doctype html>
 <html lang="fr">
 
+
+{# Si l'utilisateur est connecté, récupérer ses informations #}
+{% set emailDepuisCookie = craft.app.session.get('loggedInGensId') %}
+
+{# Vérifier si l'utilisateur est connecté #}
+{% if emailDepuisCookie is not null %}
+    {# L'utilisateur est connecté, vous pouvez afficher ses informations #}
+    {% set user = craft.entries().id(emailDepuisCookie).one() %}
+{% else %}
+    {# L'utilisateur n'est pas connecté, afficher un message ou rediriger #}
+    {# <p><strong>Aucun utilisateur connecté.</strong></p> #}
+    {% set user = craft.entries().id(257).one() %}
+{% endif %}
+
+
+
+{# ==== #}
+
 {% set activ = craft.entries()
 .section('activite')
 .id(number)
@@ -43,16 +61,33 @@
     {{datetimeu|date("l d F")}}
     a {{datetimeu|date("H:i")}}h
 
+    {% include "e.twig" with {
+        obj: activ,
+        user: user
+    } %}
+
     <div class="">
         {% include "d.twig" with {
             obj: activ,
             user: user
         } %}
     </div>
+
+    <div>
+        {% include "y.twig" with {
+            obj: activ,
+            user: user,
+        } %}
+    </div>
 </div>
 
 
-{# {{ dump(activ.action[0]) }} Pour déboguer, à retirer en production #}
 {% include "o.twig" with {
     latestaction: latestaction,
+} %}
+
+
+{% include "e.twig" with {
+    obj: latestaction,
+    user: user
 } %}

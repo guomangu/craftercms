@@ -10,15 +10,7 @@
         .limit(10)
         .all() %}
 
-{% set lactivite = craft.entries()
-    .section('activite')
-    .relatedTo({
-        targetElement: latestaction,
-        field: 'action'
-    })
-    .d(dt|date('Y-m-d'))
-    .t(t)
-    .one() %}
+
 
     <div class="related-actions"> {# Marge inférieure réduite #}
         {# Utilisation d'un titre plus petit, adapté à l'inclusion dans une carte #}
@@ -28,13 +20,22 @@
             {# Utilisation d'un List Group pour un affichage compact #}
             <ul class="list-group list-group-flush">
 
-
-
-
                 
 
 
                 {% for action in latestaction %}
+                    {% set lactivite = craft.entries()
+                    .section('activite')
+                    .relatedTo({
+                        targetElement: action,
+                        field: 'action'
+                    })
+                    .d(dt|date('Y-m-d'))
+                    .t(t)
+                    .one() %}
+
+
+
                     {% set image = action.img.one() %}
                     {# Essayez de récupérer une URL pour l'action, adaptez 'action.url' à votre structure de données #}
                     {% if lactivite %}

@@ -34,12 +34,12 @@
                             {{ latestaction.city }} : "<strong>{{ latestaction.zone }}</strong>"
                         </p>
                         {# Vous pouvez ajouter d'autres champs de 'latestaction' ici si nécessaire #}
-                        <hr>
-                        <p class="card-text mb-1">
+                        {# <hr> #}
+                        {# <p class="card-text mb-1">
                             <small class="text-muted">
                                 Prochaine date
                             </small>
-                        </p>
+                        </p> #}
                         {# <p class="card-text mb-1">
                             <small class="text-muted">heure : </small><strong>{{ latestaction.moment[0].t }}h</strong>
                         </p> #}
@@ -137,16 +137,17 @@
                             act: latestaction,
                             dt: nextOccurrenceDate
                         } %} #}
-
-                        {% include "q.twig" with {
-                            action: latestaction,
-                            dt: nextOccurrenceDate
-                        } %}
-
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="card card-body">
+                            {% include "q.twig" with {
+                                action: latestaction,
+                                dt: nextOccurrenceDate
+                            } %}
+                        </div>
     {% else %}
 
         <p class="text-danger">Aucun club associer a l'activite.</p>

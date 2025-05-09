@@ -14,36 +14,6 @@
 
 {# Conteneur principal pour aligner les personnes #}
 <div class="d-flex flex-wrap justify-content-center align-items-start gap-3">
-    
-        {# Affichage de l'image de la personne administratrice #}
-        {# {% if adm %}
-        <div class="text-center border-danger" style="max-width: 246px;">
-            {% set image = adm.img.one() %}
-            {% if image %}
-                <img src="{{ image.getUrl({width: 120, height: 120, mode: 'crop', quality: 80}) }}" {# Taille source un peu plus grande 
-                    alt="Photo de {{ adm.title }}" {# Texte alternatif descriptif
-                    class="rounded-circle shadow-sm mb-1 mx-auto d-block" {# Bulle + Ombre légère + Marge en bas + Centrage
-                    style="width: 60px; height: 60px; object-fit: cover; background-color: #f8f9fa;" {# Taille fixe + Remplissage + Fond clair si image transparente 
-                    loading="lazy"> {# Chargement différé pour les images 
-            {% else %}
-                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center shadow-sm mb-1 mx-auto"
-                    style="width: 60px; height: 60px;"
-                    title="Pas d'image pour {{ adm.title }}"> {# Tooltip indiquant l'absence d'image 
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
-                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                    </svg>
-                </div>
-            {% endif %}
-    
-            {# Affichage du nom sous la bulle 
-            <p class="mb-0 small text-center" style="line-height: 1.2; overflow-wrap: break-word;"> {# Texte petit, marge bas nulle, hauteur de ligne réduite, gestion des mots longs 
-                {{ adm.title }}
-            </p>
-        </div> {# Fin du bloc pour l'administrateur 
-        {% endif %} Fin de l'affichage de l'administrateur #}
-
-
-
 
     {# Boucle sur chaque personne inscrite dans le groupe #}
     {% for abo in abos %}
