@@ -88,8 +88,8 @@
             {# Champ texte pour l'inscription #}
             <div class="mb-2"> 
                 {# Label caché mais présent pour l'accessibilité #}
-                <label for="inscription-title" class="form-label visually-hidden">Titre de l'activite :</label> 
-                <input id="inscription-title" {# ID Unique #}
+                <label for="inscription-title-{{ action.id}}-{{ dt|date('Y-m-d') }}" class="form-label visually-hidden">Titre de l'activite :</label> 
+                <input id="inscription-title-{{ action.id}}-{{ dt|date('Y-m-d') }}" {# ID Unique #}
                        type="text" 
                        name="title" 
                        class="form-control form-control-sm"

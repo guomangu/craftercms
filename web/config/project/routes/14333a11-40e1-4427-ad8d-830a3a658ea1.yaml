@@ -1,5 +1,5 @@
 siteUid: null
-sortOrder: 7
+sortOrder: 8
 template: compte.twig
 uriParts:
   - compte

@@ -1,0 +1,64 @@
+{% block content %}
+
+{# <pre>
+    {{ dump(user) }}
+</pre> #}
+
+{% set inscrits = craft.entries()
+.section('inscrit')
+.relatedTo({
+    targetElement: user,
+    field: 'gens'
+})
+.limit(27)
+.all() %}
+
+{# <pre>
+    {{ dump(inscrits) }}
+</pre> #}
+{% set groupes = [] %}
+{% set actions = [] %}
+{% set activites = [] %}
+{% set gens = [] %}
+{% set tags = [] %}
+{% for item in inscrits %}
+    {% if item.obj[0].sectionId == 12 %}
+        {% set groupes = groupes|merge(item.obj) %}
+    {% elseif item.obj[0].sectionId == 7 %}
+        {% set actions = actions|merge(item.obj) %}
+    {% elseif item.obj[0].sectionId == 15 %}
+        {% set activites = activites|merge(item.obj) %}
+    {% elseif item.obj[0].sectionId == 9 %}
+        {% set gens = gens|merge(item.obj) %}
+    {% endif %}
+{% endfor %}
+
+{# <pre>
+    {{ dump(groupes) }}
+</pre> #}
+
+{% for groupe in groupes %}
+    groupe: {{ groupe.title }}
+{% endfor %}
+
+<hr>
+
+{% for action in actions %}
+    action: {{ action.title }}
+{% endfor %}
+
+<hr>
+
+{% for activite in activites %}
+    activite: {{ activite.title }}
+{% endfor %}
+
+<hr>
+
+{% for gen in gens %}
+    gens: {{ gen.title }}
+{% endfor %}
+
+
+
+{% endblock %}
