@@ -78,7 +78,7 @@
     
 
 
-    <div class="container mt-4">
+<div class="container mt-4">
     <h2 class="mb-3">Agenda: {{ groupe.title }}</h2>
     <div class="event-details mt-2">
         {% include "p.twig" with {
@@ -101,7 +101,6 @@
         } %}
     </div>
     
-    <hr>
 
 
     <div class="">
@@ -113,7 +112,7 @@
 
 
 
-    <div class="row row-cols-1"> {# Ajustez les colonnes selon vos préférences #}
+    <div class="row-cols-1"> {# Ajustez les colonnes selon vos préférences #}
         {% set currentDate = date_variable %}
         {% for i in 1..31 %} {# Attention: Ceci affiche toujours 31 jours. Idéalement, adaptez à la longueur du mois réel #}
 
@@ -124,8 +123,8 @@
             {# 2. Only render the card if there are events for this day #}
             {% if eventsForThisDay is not empty %}
 
-                <div class="col mb-4"> {# Added mb-4 for spacing between cards #}
-                    <div class="card h-100 shadow-sm"> {# h-100 pour des cartes de hauteur égale dans une ligne #}
+                <div class="col"> {# Added mb-4 for spacing between cards #}
+                    <div class="card shadow-sm"> {# h-100 pour des cartes de hauteur égale dans une ligne #}
                         <div class="card-header bg-light">
                             <h5 class="card-title mb-0">
                                 {{ currentDate|date('d') }} - {{ currentDate|date('l') }} {# Affiche le jour (ex: 18 - Vendredi) #}
@@ -173,7 +172,7 @@
         {% endfor %} {# Fin de la boucle des jours #}
 
       </div> {# Fin row #}
-    </div> {# Fin container #}
+</div> {# Fin container #}
 
     {% endif %}
 

@@ -14,14 +14,14 @@
 
 {% if (latestacti is defined and latestacti is not empty) %}
     {% for activite in latestacti %}
-        <div class="btn btn-outline-secondary">
-        <strong>{{activite.title}}</strong>
-        {{activite.zone}}
-        {% include "x.twig" with {
-            activ: activite,
-            user: user
-        } %}
-        </div>
+        <a href="/n/{{ activite.id }}" class="btn btn-outline-secondary">
+            <strong>{{activite.title}}</strong>
+            {{activite.zone}}
+            {% include "x.twig" with {
+                activ: activite,
+                user: user
+            } %}
+        </a>
     {% endfor %}
 {% else %}
     {# <p>Aucune activité trouvée.</p> #}
