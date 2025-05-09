@@ -24,6 +24,13 @@
                                 <p class="card-text flex-grow-1">{{ art.art}}</p>
                                 {# Optionnel: Lien vers l'article complet #}
                                 {# <a href="{{ art.url }}" class="btn btn-outline-primary btn-sm mt-auto align-self-start">Lire plus</a> #}
+                                <button class="btn btn-outline-primary btn-sm mt-auto align-self-start" type="button" data-bs-toggle="collapse" data-bs-target="#article{{ art.id }}" aria-expanded="false" aria-controls="article{{ art.id }}">Lire plus</button>
+                                <div class="collapse" id="article{{ art.id }}">
+                                    {% include "d.twig" with {
+                                        obj: art,
+                                        user: user
+                                    } %}
+                                </div>
                             </div>
                         </div>
                     </div>

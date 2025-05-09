@@ -142,17 +142,15 @@
                     // creer des carte pour chaque entrée trouvée
                     const dive = document.createElement('div');
                     dive.className = 'card mb-2'; // Ajouter une classe pour le style
-                    dive.innerHTML = `
-                        <div class="card-body">
-                            <h5 class="card-title">`+entry.title+`</h5>
-                            <p class="card-text">Groupe: `+entry.groupe[0].title+`</p>
-                            <p class="card-text">ID: `+entry.id+`</p>
-
-                            
-                            <button class="btn btn-primary" name="titittitlre" value="`+entry.title+`" onClick='addauform("`+ entry.title +`")'>Ajouter</button>
-                        </div>
-                    `;
-                   
+                    if (entry.groupe.length > 0) {
+                        dive.innerHTML = `
+                            <div class="card-body">
+                                <h5 class="card-title">`+entry.title+`</h5>
+                                <p class="card-text">Groupe: `+entry.groupe[0].title+`</p>
+                                <button class="btn btn-primary" name="titittitlre" value="`+entry.title+`" onClick='addauform("`+ entry.title +`")'>Ajouter</button>
+                            </div>
+                        `;
+                    }
                     resultContainer.appendChild(dive); // Ajouter la carte au conteneur de résultats
                 });
             })

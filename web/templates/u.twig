@@ -23,7 +23,7 @@
     </pre> #}
 
             {# -- Affichage conditionnel : Connecté ou Formulaire de Connexion -- #}
-            {% if entry %}
+            {% if entry and entry.id != 257 %}
                 {# -- Section Utilisateur Connecté -- #}
                 <div class="card shadow-sm text-center">
                     <div class="card-header">
@@ -128,7 +128,7 @@
 
 
 
-{% if entry is not defined %}
+{% if entry.id == 257 %}
 {% include "g.twig" %}
 {% endif %}
 
