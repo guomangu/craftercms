@@ -38,26 +38,96 @@
 </pre> #}
 
 {% for groupe in groupes %}
-    groupe: {{ groupe.title }}
+    {# <a class="btn" href="/m/{{ groupe.id }}"> groupe: {{ groupe.title }}</a> #}
+    <div class="card card-body m-4">
+        <h2 class="mb-3">Agenda: <a class="btn btn-outline-primary" href="/m/{{ groupe.id }}">{{ groupe.title }}</a></h2>
+        <div class="event-details mt-2">
+            {% include "p.twig" with {
+                groupe: groupe,
+                user: user,
+            } %}
+        </div>
+
+        <hr>
+
+        <div class="event-details mt-2">
+            {% include "v.twig" with {
+                groupe: groupe
+            } %}
+        </div>
+
+        <div class="event-details mt-2">
+            {% include "w.twig" with {
+                groupe: groupe
+            } %}
+        </div>
+        
+
+
+        {# <div class="">
+            {% include "d.twig" with {
+                obj: groupe,
+                user: user
+            } %}
+        </div> #}
+    </div>
 {% endfor %}
 
 <hr>
 
 {% for action in actions %}
-    action: {{ action.title }}
+<div class="card card-body m-4">
+    <a class="btn" href="/b/{{ action.id }}">action: {{ action.title }}</a> 
+    {% include "bb.twig" with {
+        latestaction: action,
+        user: user
+    }%}
+</div>
 {% endfor %}
 
 <hr>
 
-{% for activite in activites %}
-    activite: {{ activite.title }}
-{% endfor %}
+<div class="card card-body m-4">
+{% for ac in activites %}
+    {% set t = ac.t %}
+    {% set date_incomplete = ac.d %}
+    {% set heure_souhaitee = t ~":00:00" %}
+    {% set date_avec_heure_chaine = date_incomplete ~ " " ~ heure_souhaitee %}
+    {% set datetimeuuu = date(date_avec_heure_chaine) %}
 
-<hr>
+
+    <p>{{datetimeuuu|date("l d F")}} a {{datetimeuuu|date("H")}}h</p>
+    <a class="btn btn-outline-secondary" href="/n/{{ ac.id }}">
+    {{ ac.title }}
+    {{ ac.zone }}
+
+    {% include "e.twig" with {
+        obj: ac,
+        user: user,
+        nooo: true
+    } %}
+
+    {% include "x.twig" with {
+            activ: ac,
+        } %}
+    </a>
+
+    <div>
+        <div class="">
+            {% include "d.twig" with {
+                obj: ac,
+                ttt: t,
+                user: user
+            } %}
+        </div>
+    </div>
+{% endfor %}
+</div>
+{# <hr>
 
 {% for gen in gens %}
     gens: {{ gen.title }}
-{% endfor %}
+{% endfor %} #}
 
 
 
