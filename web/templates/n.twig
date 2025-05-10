@@ -4,6 +4,8 @@
 <Doctype html>
 <html lang="fr">
 
+{% include "zz.twig" %}
+
 
 {# Si l'utilisateur est connecté, récupérer ses informations #}
 {% set emailDepuisCookie = craft.app.session.get('loggedInGensId') %}

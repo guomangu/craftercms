@@ -19,6 +19,11 @@ docker exec -u root 3ff43409024f028eaabdb11b669d11e5fb715b747de86fac83ad40cec966
 
 v2//
 
-
 docker exec -u root 3721c310d8eb55471e0f4961f5f03024a70caf0dac9dbb87754c7ab0d1b9453e chmod -R 777 /app/storage
 docker exec -u root 3721c310d8eb55471e0f4961f5f03024a70caf0dac9dbb87754c7ab0d1b9453e chmod -R 777 /app/web
+docker exec -u root 3721c310d8eb55471e0f4961f5f03024a70caf0dac9dbb87754c7ab0d1b9453e chmod -R 777 /app/web
+
+
+
+sudo chown -R www-data:www-data /app/config/project
+sudo chmod -R u+w /app/config/project

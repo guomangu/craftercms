@@ -9,9 +9,10 @@
 {% if craft.app.session.hasFlash('error') %}
     <div class="alert alert-danger">{{ craft.app.session.getFlash('error') }}</div>
 {% endif %}
+
 {% block content %}
-
-
+ {# menu #}
+{% include "zz.twig" %}
 
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -140,7 +141,7 @@
 <hr>
 
 {# Affichage de la liste de la vie du user #}
-
+<p>Conversation</p>
 {% include "dd.twig" with{
     user :entry
 } %}

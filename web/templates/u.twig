@@ -2,7 +2,7 @@
 {# {% extends "_layout.twig" %} #}
 
 {% block content %}
-
+{% include "zz.twig" %}
 {# -- Vérification de l'état de connexion -- #}
             {% set emailDepuisCookie = craft.app.session.get('loggedInGensId') %}
             {% set entry = null %} {# Initialiser à null #}

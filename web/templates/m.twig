@@ -23,6 +23,9 @@
 {% endif %}
 
 {% block content %}
+
+{% include "zz.twig" %}
+
     <h2 class="mb-3">La Routine</h2>
     {# <p>Voici les derniers moments que vous avez ajoutés a votre Routine:</p> #}
     {% if number %}
@@ -56,6 +59,9 @@
     {% endif %}
     
 
+{# <pre>
+    {{ dump(latestmom) }}
+</pre> #}
 
     {# {% set latestmom = craft.entries()
         .section('moment')

@@ -54,6 +54,27 @@
 </pre> #}
 
 
+
+<br>
+<p>Groupes trouvée :</p>
+
+
+{% for g in groupess %}
+    <a class="btn btn-outline-primary" href="/m/{{g.id}}">
+        {{g.title}}
+        <small class="text-muted">
+            {% include "x.twig" with {
+                activ: g
+            } %}
+        </small>
+    </a>
+{% endfor %}
+
+
+
+
+
+
 <hr>
 {% include "mm.twig" with {
     user:user,
