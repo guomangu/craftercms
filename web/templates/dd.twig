@@ -1,0 +1,41 @@
+{% block content %}
+
+{% if user is not defined %}
+    {% set user = craft.entries().id(257).one() %}
+{% endif %}
+
+
+{% set latestmsgu = craft.entries()
+.section('desc')
+.relatedTo({
+    targetElement: user,
+    field: 'gens'
+})
+.orderBy('dateCreated DESC')
+.limit(9)
+.all() %}
+
+
+
+{% set uniqueconv = [] %}
+{% set tempIdentifiers = [] %}
+{% for object in latestmsgu %}
+    {% set identifier = object.universel[0].id %}
+    {% if identifier not in tempIdentifiers %}
+        {% set uniqueconv = uniqueconv|merge([object]) %}
+        {% set tempIdentifiers = tempIdentifiers|merge([identifier]) %}
+    {% endif %}
+{% endfor %}
+
+
+
+{% for msg in uniqueconv %}
+    {% include "d.twig" with {
+        obj: msg.universel[0],
+        user: user
+    } %}
+{% endfor %}
+
+
+
+{% endblock %}

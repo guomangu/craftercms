@@ -5,7 +5,7 @@
         {# Utilisation d'une carte pour présenter l'action principale #}
         <div class="card mb-4 shadow-sm overflow-hidden"> {# overflow-hidden pour les coins arrondis de l'image #}
             <div class="row g-0"> {# Pas d'espacement entre les colonnes de l'image et du texte #}
-                <div class="col-md-5 col-lg-4"> {# Colonne pour l'image, taille différente sur md et lg #}
+                <a href="/b/{{ latestaction.id }}" class="col-md-5 col-lg-4"> {# Colonne pour l'image, taille différente sur md et lg #}
                     {% set image = latestaction.img.one() %}
                     {% if image %}
                         {# Image responsive, couvre la hauteur possible #}
@@ -16,7 +16,7 @@
                             <span class="text-muted p-3">Aucune image</span>
                         </div>
                     {% endif %}
-                </div>
+                </a>
                 <div class="col-md-7 col-lg-8"> {# Colonne pour le texte #}
                     <div class="card-body">
                         <h1 class="card-title h2">{{ latestaction.title }}</h1> {# Titre principal de l'action #}
@@ -26,6 +26,13 @@
                         <p class="card-text mb-1">
                             {{ latestaction.city }} : "<strong>{{ latestaction.zone }}</strong>"
                         </p>
+
+                        <div>
+                            {% include "x.twig" with {
+                                activ: latestaction,
+                                user: user
+                            } %}
+                        </div>
                         {# Vous pouvez ajouter d'autres champs de 'latestaction' ici si nécessaire #}
                         <hr>
                         <p class="card-text mb-1">

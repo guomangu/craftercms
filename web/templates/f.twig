@@ -137,6 +137,14 @@
     </div> {# Fin Row #}
 </div> {# Fin Container #}
 
+<hr>
+
+{# Affichage de la liste de la vie du user #}
+
+{% include "dd.twig" with{
+    user :entry
+} %}
+
 {% include "ff.twig" with {
     user :entry
 } %}

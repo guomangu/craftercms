@@ -46,23 +46,20 @@
             {{ ac.title }}
             {{ ac.zone }}
 
+            {% include "x.twig" with {
+                    activ: ac,
+                } %}
+            </a>
+
             {% include "e.twig" with {
                 obj: ac,
                 user: user,
                 nooo: true
             } %}
 
-            {% include "x.twig" with {
-                    activ: ac,
-                } %}
-            </a>
-
-
-
             <div>
-                
-
-                <div class="">
+                <button class="btn btn-outline-primary btn-sm mt-auto align-self-start" type="button" data-bs-toggle="collapse" data-bs-target="#comactiv{{ ac.id }}" aria-expanded="false" aria-controls="comactiv{{ ac.id }}">Lire plus</button>
+                <div class="collapse" id="comactiv{{ ac.id }}">
                     {% include "d.twig" with {
                         obj: ac,
                         ttt: ttt,

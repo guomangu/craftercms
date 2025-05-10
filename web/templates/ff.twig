@@ -40,15 +40,25 @@
 {% for groupe in groupes %}
     {# <a class="btn" href="/m/{{ groupe.id }}"> groupe: {{ groupe.title }}</a> #}
     <div class="card card-body m-4">
-        <h2 class="mb-3">Agenda: <a class="btn btn-outline-primary" href="/m/{{ groupe.id }}">{{ groupe.title }}</a></h2>
-        <div class="event-details mt-2">
+        <h2 class="mb-3">Agenda: 
+            <a class="btn btn-outline-secondary" href="/m/{{ groupe.id }}">{{ groupe.title }}
+                ({% include "x.twig" with {
+                    activ: groupe,
+                } %})
+            </a> 
+        </h2>
+        {# <div>
+            {% include "x.twig" with {
+                activ: groupe,
+            } %}
+        </div> #}
+        {# <div class="event-details mt-2">
             {% include "p.twig" with {
                 groupe: groupe,
                 user: user,
             } %}
         </div>
-
-        <hr>
+        <hr> #}
 
         <div class="event-details mt-2">
             {% include "v.twig" with {
@@ -77,7 +87,7 @@
 
 {% for action in actions %}
 <div class="card card-body m-4">
-    <a class="btn" href="/b/{{ action.id }}">action: {{ action.title }}</a> 
+    {# <a class="btn" href="/b/{{ action.id }}">action: {{ action.title }}</a>  #}
     {% include "bb.twig" with {
         latestaction: action,
         user: user

@@ -18,7 +18,7 @@
 <div class="card card-body border-primary m-3" style="max-height: 66%;overflow: auto;    min-height: 327px;">
 
     <div>
-        <p class="card-text mb-0">Commentaires :</p>
+        <p class="card-text mb-0">Commentaires : {{obj.title}}</p>
         <p class="card-text mb-0">
             <small class="text-muted">
                 {% if latestdesc|length == 0 %}
@@ -30,18 +30,7 @@
         </p>
     </div>
 
-    {% for d in latestdesc %}
-        <div class="card-body">
-            <div class="btn btn-outline-secondary">{{d.gens[0].title}}</div>
-            <div class="btn">{{d.title}}</div>
-            <br>
-            <small class="text-muted">
-                {{ d.dateCreated|date('d/m/Y H:i') }}
-            </small>
-        </div>
-        <hr style="width:44%">
-    {% endfor %}
-
+    <hr style="width:44%">
 
     <form method="post" id="desc-form-{{obj.id}}" class="add-action-form m-3" accept-charset="UTF-8" enctype="multipart/form-data">
         {{ csrfInput() }}
@@ -56,6 +45,18 @@
         {# Bouton plus petit (btn-sm) et pleine largeur (w-100) pour un accès facile sur mobile #}
         <button type="submit" class="btn btn-dark btn-sm w-100 mt-2">Ajouter</button>
     </form>
+
+    {% for d in latestdesc %}
+        <hr style="width:44%">
+        <div class="card-body">
+            <div class="btn btn-outline-secondary">{{d.gens[0].title}}</div>
+            <div class="btn">{{d.title}}</div>
+            <br>
+            <small class="text-muted">
+                {{ d.dateCreated|date('d/m/Y H:i') }}
+            </small>
+        </div>
+    {% endfor %}
 </div>
 
 {% endblock %}
