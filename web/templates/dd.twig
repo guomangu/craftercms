@@ -30,10 +30,15 @@
 
 
 {% for msg in uniqueconv %}
-    {% include "d.twig" with {
-        obj: msg.universel[0],
-        user: user
-    } %}
+    <button class="btn btn-outline-secondary" style="display: flex; place-self: center;" type="button" data-bs-toggle="collapse" data-bs-target="#p-form-{{ msg.universel[0].id }}" aria-expanded="false" aria-controls="#p-form-{{ msg.universel[0].id }}">
+        <p>{{msg.universel[0].title}}</p>
+    </button>
+    <div class="collapse" id="p-form-{{ msg.universel[0].id }}">
+        {% include "d.twig" with {
+            obj: msg.universel[0],
+            user: user
+        } %}
+    </div>
 {% endfor %}
 
 
