@@ -2,13 +2,13 @@
 
 
 <button class="btn" style="display: flex; place-self: center;" type="button" data-bs-toggle="collapse" data-bs-target="#r-form-{{ action.id }}-{{ dd|date("Y-m-d") }}" aria-expanded="false" aria-controls="#r-form-{{ action.id }}-{{ dd|date("Y-m-d") }}">
-    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="red" class="bi bi-plus-circle" viewBox="0 0 16 16">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="blue" class="bi bi-plus-circle" viewBox="0 0 16 16">
         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>  
     </svg>
 </button>
 
-<form method="post" id="r-form-{{ action.id }}-{{ dd|date("Y-m-d") }}" class="card card-body collapse border-danger" accept-charset="UTF-8" enctype="multipart/form-data">
+<form method="post" id="r-form-{{ action.id }}-{{ dd|date("Y-m-d") }}" class="card card-body collapse border-info" accept-charset="UTF-8" enctype="multipart/form-data">
     {{ csrfInput() }} {# Important pour la sécurité CSRF #}
     {# {{ actionInpust('guest-entries/save') }} #}
     {{ actionInput('guest-entries/save') }}
@@ -17,6 +17,8 @@
     <input type="hidden" name="fields[action][]" value="{{ action.id }}"> {# ID du groupe #}
     <input type="hidden" name="fields[d]" value="{{ dd|date("Y-m-d") }}"> {# Date de l'activité #}
     <input type="hidden" name="fields[t]" value="{{ t }}">
+    <input type="hidden" name="fields[gensadmin][]" value="{{ user.id }}">
+
 
 
     <div class="mb-3">

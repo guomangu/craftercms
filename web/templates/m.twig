@@ -87,6 +87,11 @@
 <div class="container mt-4">
     <h2 class="mb-3">Agenda: {{ groupe.title }}</h2>
     <small class="text-muted">Proprietaire: {{groupe.gensadmin[0].title}}</small>
+    <div>
+        {% include "aa.twig" with {
+            obj:groupe
+        } %}
+    </div>
     <div class="event-details mt-2">
         {% include "p.twig" with {
             groupe: groupe,

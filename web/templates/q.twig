@@ -46,10 +46,17 @@
             {{ ac.title }}
             {{ ac.zone }}
 
+
             {% include "x.twig" with {
                     activ: ac,
                 } %}
             </a>
+
+            <div>
+        {% include "aa.twig" with {
+            obj:ac
+        } %}
+    </div>
 
             {% include "e.twig" with {
                 obj: ac,
@@ -74,7 +81,7 @@
        {% include "r.twig" with {
             action: action,
             dd: dateLimite,
-            t:t
+            t:ttt
         } %}
         
 

@@ -171,6 +171,8 @@
         {{ hiddenInput('enabled', '1') }}
         {# Assurez-vous que 'mom' est disponible et a un 'id' #}
         <input type="hidden" name="fields[moment][]" value="{{ mom.id }}">
+        <input type="hidden" name="fields[gensadmin][]" value="{{ user.id }}">
+
 
         <h6 class="mb-3">Creer votre Club du 
         {% if mom.l %}

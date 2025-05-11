@@ -63,6 +63,12 @@
     {{datetimeu|date("l d F")}}
     a {{datetimeu|date("H:i")}}h
 
+    <div>
+        {% include "aa.twig" with {
+            obj:activ
+        } %}
+    </div>
+
     {% include "e.twig" with {
         obj: activ,
         user: user
