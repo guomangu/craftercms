@@ -56,12 +56,26 @@
 
 
 <div class="container mt-4 mb-5"> {# Conteneur principal avec marges verticales #}
-    <p>Activité :</p>
 
-    {{activ.title}}
-    {{activ.zone}}
-    {{datetimeu|date("l d F")}}
-    a {{datetimeu|date("H:i")}}h
+<div class="activity-details p-2"> {# Un conteneur avec un peu de padding #}
+    <p class="text-muted mb-1 small text-uppercase">Activité :</p> {# Label discret #}
+
+    <h5 class="fw-bold mb-1">{{ activ.title }}</h5> {# Titre de l'activité en gras #}
+    <p class="text-muted mb-2"><i class="bi bi-geo-alt-fill me-1"></i>{{ activ.zone }}</p> {# Zone avec une icône (optionnel) #}
+
+    <div class="d-flex align-items-center text-muted small"> {# Conteneur flex pour la date et l'heure #}
+        <i class="bi bi-calendar-event me-2"></i> {# Icône calendrier #}
+        <span>{{ datetimeu|date("l d F") }}</span>
+        <span class="mx-1">à</span>
+        <i class="bi bi-clock me-1"></i> {# Icône horloge #}
+        <span>{{ datetimeu|date("H:i") }}h</span>
+    </div>
+</div>
+
+{# Note : Pour les icônes (bi-geo-alt-fill, bi-calendar-event, bi-clock),
+   vous devez avoir inclus Bootstrap Icons dans votre projet.
+   Exemple : <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+   Si vous ne les utilisez pas, retirez simplement les balises <i>. #}
 
     <div>
         {% include "aa.twig" with {

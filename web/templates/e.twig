@@ -54,7 +54,20 @@
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
             </svg> #}
-                <span><h3 class="mb-0 h4">Ajouter un Nouvel Article</h3></span>
+                <span><h5 class="mb-0 h4">Ajouter un Article 
+                {% if obj.sectionId == 12 %}
+                    <span>a l'Agenda<span>
+                        {% elseif obj.sectionId == 7 %}
+                            <span>au Club<span>
+                        {% elseif obj.sectionId == 15 %}
+                            <span>a l'Activité<span>
+                        {% elseif obj.sectionId == 8 %}
+                            <span>a l'Articles<span>
+                        {% elseif obj.sectionId == 13 %}
+                            <span>a l'Invitation<span>
+                        {% endif %}
+                
+                </h5></span>
             </buttons>
             <div class="card-body bg-light collapse" id="formumu{{ obj.id }}"> {# Fond léger pour distinguer le formulaire #}
                 {# ID unique pour le formulaire basé sur l'action parente #}

@@ -38,7 +38,7 @@
 
 <div class="container mt-4 mb-5"> {# Conteneur principal avec marges verticales #}
 
-<p>Club:</p>
+{# <p>Club:</p> #}
 
     {# --- Section Détail de l'Action Principale --- #}
     {# Récupération de l'action via l'ID 'number' #}
@@ -70,13 +70,13 @@
                         <p class="card-text lead">{{ latestaction.description|nl2br }}</p>
 
                         <p class="card-text mb-1">
-                            {{ latestaction.city }} : "<strong>{{ latestaction.zone }}</strong>"
+                            {{ latestaction.city }}
                         </p>
                         {# Vous pouvez ajouter d'autres champs de 'latestaction' ici si nécessaire #}
                         <hr>
                         <p class="card-text mb-1">
                             <small class="text-muted">
-                                Prochaine date
+                                Prochaine date du Club
                             </small>
                         </p>
                         <p class="card-text mb-1">
@@ -221,10 +221,10 @@
 
 </div> {# Fin container #}
 
-<hr>
+{# <hr> #}
 
-{% include "z.twig" with {
+{# {% include "z.twig" with {
     act: latestaction,
     dt: nextOccurrenceDate
-} %}
+} %} #}
 {% endblock %}
