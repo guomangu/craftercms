@@ -55,11 +55,14 @@
 
 <div class="btn-group">
     <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-        Activités
+        Suivis
     </button>
     <ul class="dropdown-menu">
         {% for ins in latestGROUPE %}
             {% if ins.obj[0].title %}
+                {% if loop.first == false %}
+                    <hr style="width:55%;">
+                {% endif %}
                 <li><a class="dropdown-item" 
                 {% if ins.obj[0].sectionId == 12 %}
                     href="/m/{{ins.obj[0].id}}"
@@ -70,6 +73,7 @@
                 {% endif %}
                 >
                     {{ins.obj[0].title}}
+                    <br>
                     <small class="text-muted">
                         {% if ins.obj[0].sectionId == 12 %}
                             <span>Agenda<span>
@@ -78,10 +82,8 @@
                         {% elseif ins.obj[0].sectionId == 15 %}
                             <span>Activité<span>
                         {% endif %}
-                        {# {{ins.obj[0].section.name}}<br> #}
                     </small>
                 </a></li>
-                <hr style="width:55%;">
             {% endif %}
         {% endfor %}
         {# <li><a class="dropdown-item" href="#">Action</a></li>
@@ -92,5 +94,18 @@
     </ul>
 </div>
     
-    
+
+
+
+
+{# <div class="btn-group"> #}
+    <button class="btn btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEptdr" aria-expanded="false" aria-controls="collapseEptdr">
+        Conversations
+    </button>
+    <div class="collapse" id="collapseEptdr">
+        {% include "dd.twig" with {
+            user:user,
+        } %}
+    </div>
+{# </div> #}
 {% endblock %}

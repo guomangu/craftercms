@@ -19,6 +19,19 @@
 
     <div>
         <p class="card-text mb-0">Commentaires : {{obj.title}}</p>
+        <small class="text-muted">
+            {% if obj.sectionId == 12 %}
+                    <span>Agenda<span>
+                        {% elseif obj.sectionId == 7 %}
+                            <span>Club<span>
+                        {% elseif obj.sectionId == 15 %}
+                            <span>Activité<span>
+                        {% elseif obj.sectionId == 8 %}
+                            <span>Articles<span>
+                        {% elseif obj.sectionId == 13 %}
+                            <span>Invitation<span>
+                        {% endif %}
+                    </small>                    
         <p class="card-text mb-0">
             <small class="text-muted">
                 {% if latestdesc|length == 0 %}
