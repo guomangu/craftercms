@@ -4,6 +4,7 @@
     {{ dump(user) }}
 </pre> #}
 
+
 {% set inscrits = craft.entries()
 .section('inscrit')
 .relatedTo({
@@ -36,6 +37,17 @@
 {# <pre>
     {{ dump(groupes) }}
 </pre> #}
+
+
+{% set gr20 = craft.entries()
+.section('groupe')
+.gensadmin(user.id)
+.limit(6)
+.all() %}
+{# <pre>
+    {{ dump(gr20) }}
+</pre> #}
+{% set groupes = groupes|merge(gr20) %}
 
 {% for groupe in groupes %}
     {# <a class="btn" href="/m/{{ groupe.id }}"> groupe: {{ groupe.title }}</a> #}

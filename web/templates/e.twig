@@ -10,7 +10,7 @@
 
         {% if latestart|length %}
             {# Grille responsive pour les cartes d'articles #}
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+            <div class="row row-cols-1">
                 {% for art in latestart %}
                     <div class="col">
                         <div class="card h-100 shadow-sm"> {# Carte pour chaque article, hauteur égale #}
@@ -24,6 +24,7 @@
                                 <p class="card-text flex-grow-1">{{ art.art}}</p>
                                 {# Optionnel: Lien vers l'article complet #}
                                 {# <a href="{{ art.url }}" class="btn btn-outline-primary btn-sm mt-auto align-self-start">Lire plus</a> #}
+                                {% if nooo == false %}
                                 <button class="btn btn-outline-primary btn-sm mt-auto align-self-start" type="button" data-bs-toggle="collapse" data-bs-target="#article{{ art.id }}" aria-expanded="false" aria-controls="article{{ art.id }}">Lire plus</button>
                                 <div class="collapse" id="article{{ art.id }}">
                                     {% include "d.twig" with {
@@ -31,15 +32,16 @@
                                         user: user
                                     } %}
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             </div>
-        {% else %}
-            {% if nooo == false %}
+        {# {% else %} #}
+            {# {% if nooo == false %}
                 <p class="text-muted mb-5">Aucun article associé trouvé pour cette action.</p>
-            {% endif %}
+            {% endif %} #}
         {% endif %}
 
 

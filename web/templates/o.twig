@@ -1,5 +1,6 @@
 {% block content %}
 
+<hr>
 <div class="container mt-4 mb-5"> {# Conteneur principal avec marges verticales #}
 
 <p>Club:</p>
@@ -31,7 +32,7 @@
                         <p class="card-text lead">{{ latestaction.description|nl2br }}</p>
 
                         <p class="card-text mb-1">
-                            {{ latestaction.city }} : "<strong>{{ latestaction.zone }}</strong>"
+                            {{ latestaction.city }}
                         </p>
                         {# Vous pouvez ajouter d'autres champs de 'latestaction' ici si nécessaire #}
                         {# <hr> #}
@@ -137,6 +138,11 @@
                             act: latestaction,
                             dt: nextOccurrenceDate
                         } %} #}
+
+                        {% include "i.twig" with {
+                            act: latestaction,
+                            dt: nextOccurrenceDate
+                        } %}
                     </div>
                 </div>
             </div>

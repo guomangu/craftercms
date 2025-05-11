@@ -172,13 +172,19 @@
         {# Assurez-vous que 'mom' est disponible et a un 'id' #}
         <input type="hidden" name="fields[moment][]" value="{{ mom.id }}">
 
-        <h6 class="mb-3">Ajouter une Action :</h6>
+        <h6 class="mb-3">Creer votre Club du 
+        {% if mom.l %}
+            {{ dt|date("l") }}
+        {% elseif mom.d %}
+            {{ dt|date("d") }}
+        {% endif %}
+        </h6>
 
         {# Utilisation de form-control-sm pour des champs plus petits, économisant l'espace vertical #}
         <div class="mb-2"> {# Marge inférieure réduite #}
             {# ID et For uniques en ajoutant mom.id pour éviter les conflits si plusieurs formulaires #}
-            <label for="title-{{ mom.id }}-{{ td }}" class="form-label visually-hidden">Action:</label> {# visually-hidden cache le label mais le garde pour l'accessibilité #}
-            <input id="title-{{ mom.id }}-{{ td }}" type="text" name="title" class="form-control form-control-sm" placeholder="Nom de l'action" required>
+            <label for="title-{{ mom.id }}-{{ td }}" class="form-label visually-hidden">Club:</label> {# visually-hidden cache le label mais le garde pour l'accessibilité #}
+            <input id="title-{{ mom.id }}-{{ td }}" type="text" name="title" class="form-control form-control-sm" placeholder="Nom du club" required>
         </div>
 
         <div class="mb-2">
@@ -186,10 +192,10 @@
             <input id="city-{{ mom.id }}-{{ td }}" type="text" name="fields[city]" class="form-control form-control-sm" placeholder="Ville" required>
         </div>
 
-        <div class="mb-2">
+        {# <div class="mb-2">
             <label for="zone-{{ mom.id }}-{{ td }}" class="form-label visually-hidden">Endroit:</label>
             <input id="zone-{{ mom.id }}-{{ td }}" type="text" name="fields[zone]" class="form-control form-control-sm" placeholder="Endroit précis" required>
-        </div>
+        </div> #}
 
         <div class="mb-3">
             <label for="img{{ mom.id }}-{{ td }}" class="form-label">Photo:</label>
